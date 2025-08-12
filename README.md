@@ -22,8 +22,16 @@ jobs:
   pr-summary:
     runs-on: ubuntu-latest
     steps:
-      - uses: your-username/pr-summary-action@v1
+      - uses: adomani/pr-summary-action@v1
 ```
+
+---
+
+## Labels
+
+The action assumes that the following labels exist:
+* `merge-conflict`;
+*
 
 ---
 
