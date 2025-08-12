@@ -51,6 +51,8 @@ then
   currCommit="$(git rev-parse HEAD)"
 fi
 
+>&2 printf $'Using internally the local path: \'%s\'.\n' "${GITHUB_ACTION_PATH}"
+
 getTransImports () {
   python3 "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${RootDir}" |
     # produce lines of the form `RootDir.ModelTheory.Algebra.Ring.Basic,-582`
