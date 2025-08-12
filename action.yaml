@@ -235,7 +235,7 @@ runs:
           gh pr edit "${PR}" --add-label large-import
         else # otherwise, we remove the label
           printf $'No large import found for PR %s\n' "${PR}"
-          gh pr edit "${PR}" --remove-label large-import
+          #gh pr edit "${PR}" --remove-label large-import
           printf $'large-import label removed.\n'
         fi
 
