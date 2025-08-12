@@ -232,6 +232,7 @@ runs:
         scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
 
     - name: Update the file-removed label
+      shell: ubuntu-latest
       run: |
         cd pr-branch
         undeprecatedMoves="$(cat moved_without_deprecation.txt)"
