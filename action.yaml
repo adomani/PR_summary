@@ -4,10 +4,10 @@ description: "Generates PR summaries, labels, and comments for pull requests"
 
 author: "Damiano Testa"
 
-#env:
+env:
+  GH_TOKEN: ${{ github.token }}
 #  rootDir: "Advents"    # make this an input
 #  mainBranch: "master"  # make this an input
-  #GH_TOKEN: ${{ github.token }}
   #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
