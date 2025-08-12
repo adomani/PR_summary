@@ -164,7 +164,7 @@ runs:
         printf 'currentHash=%s\n' "${currentHash}"
 
         echo "Compute the counts for the HEAD of the PR"
-        python "${GITHUB_ACTION_PATH}scripts/count-trans-deps.py" "${rootDir}/" > head.json
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
