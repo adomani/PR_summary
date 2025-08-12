@@ -35,6 +35,7 @@ runs:
     - name: Update the merge-conflict label
       shell: bash
       run: |
+        # Update the merge-conflict label
         cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
