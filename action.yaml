@@ -4,9 +4,9 @@ description: "Generates PR summaries, labels, and comments for pull requests"
 
 author: "Damiano Testa"
 
-env:
-  rootDir: "Advents"    # make this an input
-  mainBranch: "master"  # make this an input
+#env:
+#  rootDir: "Advents"    # make this an input
+#  mainBranch: "master"  # make this an input
   #GH_TOKEN: ${{ github.token }}
   #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # Limit permissions for GITHUB_TOKEN for the entire workflow
@@ -17,11 +17,17 @@ permissions:
 
 runs:
   using: "composite"
-  runs_on: ubuntu-latest
-  env:
-    rootDir: "Advents"    # make this an input
-    mainBranch: "master"  # make this an input
   steps:
+    - name: Set globals
+      id: globals
+      shell: bash
+      run: |
+        echo "mainBranch=master" >> "${GITHUB_OUTPUT}"    # make this an input
+        echo "rootDir=Advents"   >> "${GITHUB_OUTPUT}"    # make this an input
+
+    ## Runs the `date` command in bash and outputs the date/time.
+    #- name: Run command
+    #  shell: ${{ steps.globals.outputs.TEST_ACTION_SHELL }}
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
@@ -37,18 +43,18 @@ runs:
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
-        printf $'Using \'%s\' as main branch.\n' "${mainBranch}"
-        if git merge "origin/${mainBranch}" --no-ff --no-commit
+        printf $'Using \'%s\' as main branch.\n' "${{ steps.globals.outputs.mainBranch }}"
+        if git merge "origin/${{ steps.globals.outputs.mainBranch }}" --no-ff --no-commit
         then
           git merge --abort || true
-          printf $'This PR does not have merge conflicts with %s.\nRemoving \'merge-conflict\' label, if present.' "${mainBranch}"
+          printf $'This PR does not have merge conflicts with %s.\nRemoving \'merge-conflict\' label, if present.' "${{ steps.globals.outputs.mainBranch }}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
             --header 'authorization: Bearer "${GITHUB_TOKEN}"'
         else
-          printf $'This PR has merge conflicts with %s.\n' "${mainBranch}"
+          printf $'This PR has merge conflicts with %s.\n' "${{ steps.globals.outputs.mainBranch }}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request POST \
@@ -159,19 +165,19 @@ runs:
         # Compute transitive imports
         cd pr-branch
         # the checkout dance, to avoid a detached head
-        git checkout "${mainBranch}"
+        git checkout "${{ steps.globals.outputs.mainBranch }}"
         git checkout -
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
         # Checkout the merge base
-        git checkout "$(git merge-base "${mainBranch}" ${{ github.event.pull_request.head.sha }})"
+        git checkout "$(git merge-base "${{ steps.globals.outputs.mainBranch }}" ${{ github.event.pull_request.head.sha }})"
 
         find /home/runner/ -iname '*count-trans-deps.py*'
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
         printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
         echo "Compute the counts for the HEAD of the PR"
-        #python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
+        #python "${path}/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > head.json
         #ls ${GITHUB_ACTION_PATH}/
         #ls ${GITHUB_ACTION_PATH}/scripts
         #echo "What is available here?"
@@ -179,9 +185,9 @@ runs:
         #echo "head of ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
         #head "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
 
-        python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${rootDir}/" > head.json
+        python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${{ steps.globals.outputs.rootDir }}/" > head.json
         echo "Compute the counts for the merge base"
-        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > base.json
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
@@ -201,6 +207,8 @@ runs:
 
         echo "Produce import count comment"
         importCount=$(
+          mainBranch="${{ steps.globals.outputs.mainBranch }}"
+          rootDir="${{ steps.globals.outputs.rootDir }}"
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
           "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh"
         )
