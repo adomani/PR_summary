@@ -170,6 +170,8 @@ runs:
         #python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
         ls ${GITHUB_ACTION_PATH}/
         ls ${GITHUB_ACTION_PATH}/scripts
+        echo "What is available here?"
+        ls
         python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${rootDir}/" > head.json
 
         # Checkout the merge base
