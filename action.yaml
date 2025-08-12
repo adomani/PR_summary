@@ -151,7 +151,7 @@ runs:
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
       env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
+        GITHUB_ACTION_PATH: /home/runner/work/_actions/PR_summary #${{ github.action_path }}
 
     - name: Compute transitive imports
       shell: bash
@@ -163,6 +163,7 @@ runs:
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
+        find . -i '*count-trans-deps.py*'
         echo "Compute the counts for the HEAD of the PR"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > head.json
 
