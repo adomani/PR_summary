@@ -42,7 +42,7 @@ runs:
         if git merge origin/master --no-ff --no-commit
         then
           git merge --abort || true
-          echo "This PR does not have merge conflicts with master."
+          printf $'This PR does not have merge conflicts with master.\nRemoving \'merge-conflict\' label, if present.'
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request DELETE \
