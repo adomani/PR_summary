@@ -227,11 +227,14 @@ runs:
           printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
         )
         # if there are files with large increase in transitive imports, then we add the `large-import` label
+        echo "High percentage imports produced"
         if [ -n "${high_percentages}" ]
         then
+          echo "Large import found"
           high_percentages=$'\n\n'"${high_percentages}"
           gh pr edit "${PR}" --add-label large-import
         else # otherwise, we remove the label
+          echo "No large import found"
           gh pr edit "${PR}" --remove-label large-import
         fi
 
