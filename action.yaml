@@ -175,12 +175,12 @@ runs:
         printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
         echo "Compute the counts for the HEAD of the PR"
         #python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
-        ls ${GITHUB_ACTION_PATH}/
-        ls ${GITHUB_ACTION_PATH}/scripts
-        echo "What is available here?"
-        ls
-        echo "head of ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
-        head "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
+        #ls ${GITHUB_ACTION_PATH}/
+        #ls ${GITHUB_ACTION_PATH}/scripts
+        #echo "What is available here?"
+        #ls
+        #echo "head of ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
+        #head "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
 
         python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${rootDir}/" > head.json
         echo "Compute the counts for the merge base"
