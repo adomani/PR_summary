@@ -5,7 +5,8 @@ description: "Generates PR summaries, labels, and comments for pull requests"
 author: "Damiano Testa"
 
 env:
-  rootDir: "Advents"
+  rootDir: "Advents"    # make this an input
+  mainBranch: "master"  # make this an input
   #GH_TOKEN: ${{ github.token }}
   #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # Limit permissions for GITHUB_TOKEN for the entire workflow
@@ -24,12 +25,12 @@ runs:
         fetch-depth: 0
         path: pr-branch
 
-    # Checkout the master branch into a subdirectory
-    - name: Checkout master branch
+    # Checkout the mainBranch branch into a subdirectory
+    - name: Checkout mainBranch branch
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
-        # When testing the scripts, comment out the "ref: master"
-        ref: master
+        # When testing the scripts, comment out the `ref: "${mainBranch}"`
+        ref: "${mainBranch}"
         path: master-branch
 
     - name: Update the merge-conflict label
@@ -41,17 +42,17 @@ runs:
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
 
-        if git merge origin/master --no-ff --no-commit
+        if git merge "origin/${mainBranch}" --no-ff --no-commit
         then
           git merge --abort || true
-          printf $'This PR does not have merge conflicts with master.\nRemoving \'merge-conflict\' label, if present.'
+          printf $'This PR does not have merge conflicts with %s.\nRemoving \'merge-conflict\' label, if present.' "${mainBranch}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
             --header 'authorization: Bearer "${GITHUB_TOKEN}"'
         else
-          echo "This PR has merge conflicts with master."
+          printf $'This PR has merge conflicts with %s.\n' "${mainBranch}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request POST \
@@ -162,13 +163,13 @@ runs:
         # Compute transitive imports
         cd pr-branch
         # the checkout dance, to avoid a detached head
-        git checkout master
+        git checkout "${mainBranch}"
         git checkout -
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
         # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
+        git checkout "$(git merge-base "${mainBranch}" ${{ github.event.pull_request.head.sha }})"
 
         find /home/runner/ -iname '*count-trans-deps.py*'
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
@@ -244,23 +245,23 @@ runs:
         techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
-        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_the_main_branch.md
 
         echo "Include any errors about removed or renamed files without deprecation,"
         echo "as well as errors about extraneous deprecated_module additions."
         if [ -s moved_without_deprecation.txt ]
         then
-          printf '\n\n---\n\n' >> please_merge_master.md
-          cat moved_without_deprecation.txt >> please_merge_master.md
+          printf '\n\n---\n\n' >> please_merge_the_main_branch.md
+          cat moved_without_deprecation.txt >> please_merge_the_main_branch.md
         fi
         if [ -s extraneous_deprecated_module.txt ]
         then
-          printf '\n\n---\n\n' >> please_merge_master.md
-          cat extraneous_deprecated_module.txt >> please_merge_master.md
+          printf '\n\n---\n\n' >> please_merge_the_main_branch.md
+          cat extraneous_deprecated_module.txt >> please_merge_the_main_branch.md
         fi
 
-        cat please_merge_master.md
-        "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" please_merge_master.md "${title}" "${PR}"
+        cat please_merge_the_main_branch.md
+        "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" please_merge_the_main_branch.md "${title}" "${PR}"
 
     - name: Update the file-removed label
       shell: bash
