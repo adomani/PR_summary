@@ -25,14 +25,6 @@ runs:
         fetch-depth: 0
         path: pr-branch
 
-    # Checkout the mainBranch branch into a subdirectory
-    - name: Checkout mainBranch branch
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        # When testing the scripts, comment out the `ref: "${mainBranch}"`
-        ref: "${mainBranch}"
-        path: master-branch
-
     - name: Update the merge-conflict label
       shell: bash
       run: |
