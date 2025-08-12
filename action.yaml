@@ -1,8 +1,18 @@
 name: "PR Summary Action"
+
 description: "Generates PR summaries, labels, and comments for pull requests"
+
 author: "Damiano Testa"
+
 env:
   rootDir: "Mathlib"
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 runs:
   using: "composite"
   steps:
