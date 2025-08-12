@@ -26,9 +26,6 @@ The output is of the form
 with collapsible tabs for file entries with at least 3 files.
 BASH_MODULE_DOCS
 
-RootDir="Advents"
-mainBranch="master"
-
 # `all=1` is the flag to print all import changes, without cut-off
 all=0
 if [ "${1:-}" == "all" ]
@@ -54,7 +51,7 @@ fi
 >&2 printf $'Using internally the local path: \'%s\'.\n' "${GITHUB_ACTION_PATH}"
 
 getTransImports () {
-  python3 "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${RootDir}" |
+  python3 "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}" |
     # produce lines of the form `RootDir.ModelTheory.Algebra.Ring.Basic,-582`
     sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
