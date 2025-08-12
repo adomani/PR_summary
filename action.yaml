@@ -151,7 +151,7 @@ runs:
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
       env:
-        GITHUB_ACTION_PATH: /home/runner/work/_actions/PR_summary #${{ github.action_path }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Compute transitive imports
       shell: bash
@@ -164,7 +164,10 @@ runs:
         printf 'currentHash=%s\n' "${currentHash}"
 
         find /home/runner/ -iname '*count-trans-deps.py*'
+        path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
+        printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
         echo "Compute the counts for the HEAD of the PR"
+        python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > head.json
 
         # Checkout the merge base
