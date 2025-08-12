@@ -199,6 +199,7 @@ runs:
         currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
+        printf $'Using internally the local path: \'%s\'.\n' "${GITHUB_ACTION_PATH}"
 
         graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt)
 
