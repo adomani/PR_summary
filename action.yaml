@@ -1,0 +1,47 @@
+name: "PR Summary Action"
+description: "Generates PR summaries, labels, and comments for pull requests"
+author: "Your Name"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install networkx
+      shell: bash
+
+    - name: Count transitive dependencies
+      run: python scripts/count-trans-deps.py
+      shell: bash
+
+    - name: Declarations difference
+      run: bash scripts/declarations_diff.sh
+      shell: bash
+
+    - name: Import graph report
+      run: python scripts/import-graph-report.py
+      shell: bash
+
+    - name: Import transitive difference
+      run: bash scripts/import_trans_difference.sh
+      shell: bash
+
+    - name: Technical debt metrics
+      run: bash scripts/technical-debt-metrics.sh
+      shell: bash
+
+    - name: Update PR comment
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO_NAME: ${{ github.repository }}
+      run: bash scripts/update_PR_comment.sh
+      shell: bash
