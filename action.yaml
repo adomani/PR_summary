@@ -33,7 +33,7 @@ runs:
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
-
+        printf $'Using \'%s\' as main branch.\n' "${mainBranch}"
         if git merge "origin/${mainBranch}" --no-ff --no-commit
         then
           git merge --abort || true
