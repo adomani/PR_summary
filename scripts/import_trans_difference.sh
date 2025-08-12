@@ -26,7 +26,7 @@ The output is of the form
 with collapsible tabs for file entries with at least 3 files.
 BASH_MODULE_DOCS
 
-RootDir="Mathlib"
+RootDir="Advents"
 mainBranch="master"
 
 # `all=1` is the flag to print all import changes, without cut-off
@@ -52,19 +52,19 @@ then
 fi
 
 getTransImports () {
-  python3 scripts/count-trans-deps.py "${RootDir}" |
+  python3 "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${RootDir}" |
     # produce lines of the form `RootDir.ModelTheory.Algebra.Ring.Basic,-582`
     sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
 }
 
 git checkout "${commit1}"
-git checkout "${mainBranch}" scripts/count-trans-deps.py
+#git checkout "${mainBranch}" scripts/count-trans-deps.py
 getTransImports > transImports1.txt
 git checkout "${currCommit}"
 
 git checkout "${commit2}"
-git checkout "${mainBranch}" scripts/count-trans-deps.py
+#git checkout "${mainBranch}" scripts/count-trans-deps.py
 getTransImports - > transImports2.txt
 git checkout "${currCommit}"
 
