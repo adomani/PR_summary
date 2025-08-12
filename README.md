@@ -23,3 +23,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: your-username/pr-summary-action@v1
+```
+
+---
+
+## **Repository Structure**
+
+```
+pr-summary-action/
+│
+├── action.yml
+├── README.md
+├── scripts/
+│ ├── count-trans-deps.py
+│ ├── declarations_diff.sh
+│ ├── import-graph-report.py
+│ ├── import_trans_difference.sh
+│ ├── technical-debt-metrics.sh
+│ └── update_PR_comment.sh
+```
