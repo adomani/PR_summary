@@ -76,6 +76,7 @@ runs:
     - name: Get changed and removed/renamed files
       shell: bash
       run: |
+        # Get changed and removed/renamed files
         cd pr-branch
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
 
@@ -114,6 +115,7 @@ runs:
     - name: Compute (re)moved files without deprecation
       shell: bash
       run: |
+        # Compute (re)moved files without deprecation
         cd pr-branch
         touch moved_without_deprecation.txt
         touch extraneous_deprecated_module.txt
@@ -156,6 +158,7 @@ runs:
     - name: Compute transitive imports
       shell: bash
       run: |
+        # Compute transitive imports
         cd pr-branch
         # the checkout dance, to avoid a detached head
         git checkout master
@@ -190,6 +193,7 @@ runs:
         BRANCH_NAME: ${{ github.head_ref }}
       shell: bash
       run: |
+        # Post or update the summary comment
         cd pr-branch
         currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
