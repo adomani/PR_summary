@@ -234,8 +234,9 @@ runs:
           high_percentages=$'\n\n'"${high_percentages}"
           gh pr edit "${PR}" --add-label large-import
         else # otherwise, we remove the label
-          echo "No large import found"
+          printf $'No large import found for PR %s\n' "${PR}"
           gh pr edit "${PR}" --remove-label large-import
+          printf $'large-import label removed.\n'
         fi
 
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
