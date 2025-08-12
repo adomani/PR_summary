@@ -28,8 +28,8 @@ runs:
       id: globals
       shell: bash
       run: |
-
-        curl -sS -f -I -H "Authorization: token ${{ inputs.GITHUB_TOKEN }}" https://api.github.com | grep -i x-oauth-scopes x-oauth-scopes: public_repo, repo:status, repo_deployment
+        gh auth status
+        curl -sS -f -I -H "Authorization: token ${{ inputs.GITHUB_TOKEN }}" https://api.github.com | grep -i x-oauth-scopes x-oauth-scopes: PR_summary, repo:status, repo_deployment
         echo "mainBranch=master" >> "${GITHUB_OUTPUT}"    # make this an input
         echo "rootDir=Advents"   >> "${GITHUB_OUTPUT}"    # make this an input
 
