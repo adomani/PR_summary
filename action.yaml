@@ -163,7 +163,7 @@ runs:
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
-        find . -i '*count-trans-deps.py*'
+        find . -iname '*count-trans-deps.py*'
         echo "Compute the counts for the HEAD of the PR"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > head.json
 
