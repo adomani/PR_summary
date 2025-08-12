@@ -163,6 +163,9 @@ runs:
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
+        # Checkout the merge base
+        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
+
         find /home/runner/ -iname '*count-trans-deps.py*'
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
         printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
@@ -172,11 +175,10 @@ runs:
         ls ${GITHUB_ACTION_PATH}/scripts
         echo "What is available here?"
         ls
+        echo "head of ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
+        head "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
+
         python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${rootDir}/" > head.json
-
-        # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
-
         echo "Compute the counts for the merge base"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > base.json
 
