@@ -49,7 +49,7 @@ runs:
         # Update the merge-conflict label
 
         gh auth status
-        curl -sS -f -I -H "Authorization: token ${{ inputs.GITHUB_TOKEN }}" https://api.github.com | grep -i x-oauth-scopes x-oauth-scopes: PR_summary, repo:status, repo_deployment
+        # curl -sS -f -I -H "Authorization: token ${{ inputs.GITHUB_TOKEN }}" https://api.github.com | grep -i x-oauth-scopes x-oauth-scopes: PR_summary, repo:status, repo_deployment
 
         cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
