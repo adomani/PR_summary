@@ -170,7 +170,7 @@ runs:
         git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
-        python scripts/count-trans-deps.py "${rootDir}/" > base.json
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
@@ -185,12 +185,12 @@ runs:
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
-        graphAndHighPercentReports=$(python scripts/import-graph-report.py base.json head.json changed_files.txt)
+        graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt)
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          scripts/import_trans_difference.sh
+          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh"
         )
 
         echo "Produce high percentage imports"
@@ -214,7 +214,7 @@ runs:
         fi
 
         echo "Compute Declarations' diff comment"
-        declDiff=$(scripts/declarations_diff.sh)
+        declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh")
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
@@ -226,7 +226,7 @@ runs:
         printf 'hashURL: %s' "${hashURL}"
 
         echo "Compute technical debt changes"
-        techDebtVar="$(scripts/technical-debt-metrics.sh pr_summary)"
+        techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
@@ -245,7 +245,7 @@ runs:
         fi
 
         cat please_merge_master.md
-        scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
+        "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" please_merge_master.md "${title}" "${PR}"
 
     - name: Update the file-removed label
       shell: bash
