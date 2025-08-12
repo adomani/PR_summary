@@ -167,8 +167,8 @@ runs:
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
         printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
         echo "Compute the counts for the HEAD of the PR"
-        python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
-        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}/" > head.json
+        #python "${path}/count-trans-deps.py" "${rootDir}/" > head.json
+        python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${rootDir}/" > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
