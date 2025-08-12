@@ -6,6 +6,7 @@ author: "Damiano Testa"
 
 env:
   rootDir: "Mathlib"
+  GH_TOKEN: ${{ github.token }}
   #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
