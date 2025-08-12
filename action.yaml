@@ -17,6 +17,7 @@ permissions:
 
 runs:
   using: "composite"
+  runs_on: ubuntu-latest
   env:
     rootDir: "Advents"    # make this an input
     mainBranch: "master"  # make this an input
