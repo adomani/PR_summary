@@ -32,7 +32,7 @@ runs:
         path: master-branch
 
     - name: Update the merge-conflict label
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
@@ -66,14 +66,14 @@ runs:
         python-version: 3.12
 
     - name: Install Python dependencies
-      shell: ubuntu-latest
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
     - name: Get changed and removed/renamed files
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
@@ -111,7 +111,7 @@ runs:
               }' | tee renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         touch moved_without_deprecation.txt
@@ -148,12 +148,12 @@ runs:
 
     - name: Set GitHub Path
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: ubuntu-latest
+      shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Compute transitive imports
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         # the checkout dance, to avoid a detached head
@@ -177,7 +177,7 @@ runs:
     - name: Post or update the summary comment
       env:
         BRANCH_NAME: ${{ github.head_ref }}
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         currentHash="$(git rev-parse HEAD)"
@@ -247,7 +247,7 @@ runs:
         scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
 
     - name: Update the file-removed label
-      shell: ubuntu-latest
+      shell: bash
       run: |
         cd pr-branch
         undeprecatedMoves="$(cat moved_without_deprecation.txt)"
