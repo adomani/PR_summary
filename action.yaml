@@ -16,7 +16,10 @@ inputs:
 #  mainBranch: "master"  # make this an input
   #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # Limit permissions for GITHUB_TOKEN for the entire workflow
+
+
 permissions:
+  issues: write
   contents: read
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
