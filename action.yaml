@@ -207,10 +207,10 @@ runs:
 
         echo "Produce import count comment"
         importCount=$(
-          mainBranch="${{ steps.globals.outputs.mainBranch }}"
-          rootDir="${{ steps.globals.outputs.rootDir }}"
+          #mainBranch="${{ steps.globals.outputs.mainBranch }}"
+          #rootDir="${{ steps.globals.outputs.rootDir }}"
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh"
+          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ steps.globals.outputs.mainBranch }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"

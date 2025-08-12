@@ -6,8 +6,10 @@ set -euo pipefail
 IFS=$'\n\t'
 
  : <<'BASH_MODULE_DOCS'
-`scripts/import_trans_difference.sh <opt all> <opt_commit1> <opt_commit2>` outputs a full diff
-of the change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.
+`scripts/import_trans_difference.sh mainBranch rootDir <opt all> <opt_commit1> <opt_commit2>`
+outputs a full diff of the change of transitive imports in all the files between
+`<opt_commit1>` and `<opt_commit2>`,
+using `mainBranch` for the "reference" branch and looking at imports of files contained in `rootDir`.
 
 The optional flag `<opt all>` must either be `all` or not be passed.
 Without `all`, the script only displays the difference if the output does not exceed 200 lines.
@@ -34,9 +36,12 @@ then
   shift
 fi
 
-commit1="${1:-"$(git rev-parse HEAD)"}"
+mainBranch="${1:-}"
+rootDir="${2:-}"
 
-commit2="${2:-"$(git merge-base "${mainBranch}" ${commit1})"}"
+commit1="${3:-"$(git rev-parse HEAD)"}"
+
+commit2="${4:-"$(git merge-base "${mainBranch}" ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
