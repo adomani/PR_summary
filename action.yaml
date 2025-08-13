@@ -10,9 +10,9 @@ inputs:
     required: false
     default: ${{ github.token }}
   MAIN_BRANCH:
-    description: 'The name of the main branch against which to compare the changes. The default is master'
+    description: 'The name of the main branch against which to compare the changes. The default is the base branch of the PR'
     required: false
-    default: master
+    default: ${{ github.base_ref }}
   ROOT_DIR:
     description: 'The name of the main directory used for import changes. The default is the name of the repository, with the first letter capitalized.'
     required: false
@@ -76,7 +76,7 @@ runs:
         git checkout "${{ inputs.MAIN_BRANCH }}"
         git checkout -
 
-        BRANCH="$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
+        BRANCH="${{ github.head_ref }}" #"$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
         printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
         git checkout "${BRANCH}"
         if git merge "origin/${{ inputs.MAIN_BRANCH }}" --no-ff --no-commit
