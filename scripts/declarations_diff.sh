@@ -46,20 +46,42 @@ BASH_DOC_MODULE
 set -euo pipefail
 IFS=$'\n\t'
 
+mainBranch='master'
+long='false'
+verbose='false'
+inputCommit=''
+
+print_usage() {
+  printf $'\nUsage: \'%s\' admits the following flags:
+
+-b string\n   specifies the branch with respect to which the script computes the diff; the default is master
+
+-l\n   whether the output is long; the default is short
+
+-i string\n   an optional reference commit; the default is the merge-base with mainBranch
+
+-h\n   display this help message
+' "${0}"
+}
+
+while getopts 'b:li:h' flag; do
+  case "${flag}" in
+    b) mainBranch="${OPTARG}" ;;
+    l) long='true' ;;
+    i) inputCommit="${OPTARG}" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 
-if [ "${1:-}" == "long" ]
-then
-  short=0
-else short=1
-fi
-
 ## if an input commit is given, compute the diff with that, otherwise, use the git-magic `...`
-full_output=$(if [ -n "${2:-}" ]; then
-  git diff --unified=0 "${2:-}"
+full_output=$(if [ -n "${inputCommit}" ]; then
+  git diff --unified=0 "${inputCommit}"
 else
-  git diff origin/master...HEAD
+  git diff --unified=0 origin/"${mainBranch}"...HEAD
 fi |
   ## the first sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
   ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
@@ -113,7 +135,7 @@ fi |
 set +e
 
 ## report may be empty, if every declaration is accounted for.
-report="$(if [ "${short}" == "0" ]
+report="$(if [ "${long}" == "true" ]
 then
   ## the full report is just what was computed above
   echo "${full_output}"
@@ -165,14 +187,15 @@ else
 fi
 
 printf $'<details>
-  <summary>You can run this locally as follows</summary>\n\n
+  <summary>You can run this locally by cloning the [adomani/PR_summary](https://github.com/adomani/PR_summary) repo and then using the \'scripts/declarations_diff.sh\' as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
-./scripts/declarations_diff.sh <optional_commit>
+./scripts/declarations_diff.sh
 
 ## more verbose report:
-./scripts/declarations_diff.sh long <optional_commit>
+./scripts/declarations_diff.sh -l
 ```
+Running `./scripts/declarations_diff.sh -h` shows the available options.
 </details>
 
 The doc-module for `script/declarations_diff.sh` contains some details about this script.'
