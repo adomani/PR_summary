@@ -259,10 +259,10 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        printf $'report<<IMP_DIFF_REP|||\n%s\n\n%s\n|||IMP_DIFF_REP|||' "${high_percentages}" "${importCount}" |
+        printf $'report<<IMP_DIFF_REP|||||||\n%s\n\n%s\n|||||||IMP_DIFF_REP|||||||' "${high_percentages}" "${importCount}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||=\n=' |
+                  s=|||||||=\n=' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
@@ -283,10 +283,10 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        printf $'report<<DECL_DIFF_REPORT|||\n%s\n|||DECL_DIFF_REPORT|||' "${declDiff}" |
+        printf $'report<<DECL_DIFF_REPORT|||||||\n%s\n|||||||DECL_DIFF_REPORT|||||||' "${declDiff}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||=\n=' |
+                  s=|||||||=\n=' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Renames
@@ -314,10 +314,10 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          printf $'report<<RENAMED_FILES_REPORT|||\n%s\n|||RENAMED_FILES_REPORT|||' "${report}" |
+          printf $'report<<RENAMED_FILES_REPORT|||||||\n%s\n|||||||RENAMED_FILES_REPORT|||||||' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||=\n=' |
+                    s=|||||||=\n=' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -333,10 +333,10 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          printf $'report<<CUSTOM_REPORT_SCRIPT|||\n%s\n|||CUSTOM_REPORT_SCRIPT|||' "${report}" |
+          printf $'report<<CUSTOM_REPORT_SCRIPT|||||||\n%s\n|||||||CUSTOM_REPORT_SCRIPT|||||||' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||=\n=' |
+                    s=|||||||=\n=' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
