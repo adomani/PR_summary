@@ -252,7 +252,7 @@ runs:
 
         printf $'Add import report to the summary file\n'
         printf 'report<<IMP_DIFF_REP\n%s\n\n%s\nIMP_DIFF_REP\n' "${high_percentages}" "${importCount}" |
-          sed 's=`=${{ steps.globals.outputs.separator }}=' |
+          sed 's=`=${{ steps.globals.outputs.separator }}=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
@@ -275,7 +275,7 @@ runs:
 
         printf $'Add the declarations diff to the summary file\n'
         printf '\n\n---\n\n%s' "${declDiff}" |
-          sed 's=`=${{ steps.globals.outputs.separator }}=' |
+          sed 's=`=${{ steps.globals.outputs.separator }}=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Post or update the summary comment
@@ -304,11 +304,11 @@ runs:
 
         printf $'Add import report to the summary file\n'
         printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
-          sed 's='"${{ steps.globals.outputs.separator }}"'=`=g' >> "${summaryFile}"
+          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         printf $'Add the declarations diff to the summary file\n'
         printf '\n\n---\n\n%s' "${declDiff}" |
-          sed 's='"${{ steps.globals.outputs.separator }}"'=`=g' >> "${summaryFile}"
+          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         echo "Compute technical debt changes"
         techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
