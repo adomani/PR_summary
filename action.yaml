@@ -307,8 +307,8 @@ runs:
         fi
 
     - name: Custom report
-      #env:
-      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
       id: custom
       shell: bash
       run: |
