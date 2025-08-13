@@ -55,7 +55,7 @@ def compare_counts(base_file, head_file, changed_files):
     messages = []
     for file, base_count, head_count, diff, percent in changes:
         sign = "+" if diff > 0 else ""
-        messages.append(f'| {file} | {base_count} | {head_count} | {sign}{diff} ({sign}{percent:.2f}%) |')
+        messages.append(f'| `{file}` | {base_count} | {head_count} | {sign}{diff} ({sign}{percent:.2f}%) |')
 
     # Build the message
     message = ''
