@@ -67,7 +67,7 @@ runs:
 
         # avoid detached head?
         git checkout "${{ inputs.MAIN_BRANCH }}"
-        git switch -
+        git checkout -
 
         BRANCH="$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
         printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
