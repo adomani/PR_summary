@@ -208,30 +208,11 @@ runs:
         echo "Compute the counts for the HEAD of the PR"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
 
-    - name: Post or update the summary comment
-      env:
-        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+    - name: Import report
+      id: import_diff
       shell: bash
       run: |
-        # Post or update the summary comment
-
-        summaryFile=please_merge_the_main_branch.md
-        appendSummary () {
-          printf $'%s\n---\n' "${1}" >> "${summaryFile}"
-        }
-        git checkout "${{ github.head_ref }}"
-
-        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
-        printf 'hashURL: %s\n' "${hashURL}"
-
-        shortHash="$(git rev-parse --short HEAD)"
-        PR="${{ github.event.pull_request.number }}"
-        title="### PR summary"
-        #appendSummary "${title}"
-
-        printf $'Create the summary header\n'
-        printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
-
+        # Import report
         graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt)
 
         echo "Produce import count comment"
@@ -264,7 +245,34 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        printf '%s\n\n%s\n' "${high_percentages}" "${importCount}" >> "${summaryFile}"
+        printf 'report<<IMP_DIFF_REP\n%s\n\n%s\nIMP_DIFF_REP\n' "${high_percentages}" "${importCount}" | tee "${GITHUB_OUTPUT}"
+
+    - name: Post or update the summary comment
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      shell: bash
+      run: |
+        # Post or update the summary comment
+
+        summaryFile=please_merge_the_main_branch.md
+        appendSummary () {
+          printf $'%s\n---\n' "${1}" >> "${summaryFile}"
+        }
+        git checkout "${{ github.head_ref }}"
+
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
+        printf 'hashURL: %s\n' "${hashURL}"
+
+        shortHash="$(git rev-parse --short HEAD)"
+        PR="${{ github.event.pull_request.number }}"
+        title="### PR summary"
+        #appendSummary "${title}"
+
+        printf $'Create the summary header\n'
+        printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
+
+        printf $'Add import report to the summary file\n'
+        printf '%s\n\n%s\n' ""${{ steps.import_diff.outputs.report }}/"" >> "${summaryFile}"
 
         echo "Compute Declarations' diff comment"
         declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh")
