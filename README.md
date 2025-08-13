@@ -31,7 +31,8 @@ jobs:
 
 The action assumes that the following labels exist:
 * `merge-conflict`;
-*
+* `file-removed`;
+* `large-import`.
 
 ---
 
