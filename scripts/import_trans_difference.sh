@@ -6,13 +6,10 @@ set -euo pipefail
 IFS=$'\n\t'
 
  : <<'BASH_MODULE_DOCS'
-`scripts/import_trans_difference.sh mainBranch rootDir separator <opt all> <opt_commit1> <opt_commit2>`
+`scripts/import_trans_difference.sh mainBranch rootDir <opt all> <opt_commit1> <opt_commit2>`
 outputs a full diff of the change of transitive imports in all the files between
 `<opt_commit1>` and `<opt_commit2>`,
 using `mainBranch` for the "reference" branch and looking at imports of files contained in `rootDir`.
-The `separator` input is what gets printed instead of a backtick, since passing backticks into github
-variables makes it virtually impossible to escape them.
-The `separator` string gets later replaced by a backtick, when composing the final message.
 
 The optional flag `<opt all>` must either be `all` or not be passed.
 Without `all`, the script only displays the difference if the output does not exceed 200 lines.
@@ -41,11 +38,10 @@ fi
 
 mainBranch="${1:-}"
 rootDir="${2:-}"
-separator="${3:-}"
 
-commit1="${4:-"$(git rev-parse HEAD)"}"
+commit1="${3:-"$(git rev-parse HEAD)"}"
 
-commit2="${5:-"$(git merge-base "${mainBranch}" ${commit1})"}"
+commit2="${4:-"$(git merge-base "${mainBranch}" ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
@@ -78,7 +74,7 @@ getTransImports - > transImports2.txt
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (gawk -F, -v all="${all}" -v ghLimit='261752' -v sep="${separator}" -v newFiles="$(
+  (gawk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
       # we pass the "A"dded files with respect to master, converting them to module names
       git diff --name-only --diff-filter=A master | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
@@ -98,13 +94,11 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         # we add "(new file)" next to the modules whose name appears in `newModules`
         # we separate entries with a line break, so that later we can sort the modules
         # with the same number of import differences easily
-        escapedFile=sprintf("%s%s%s", sep, fil, sep)
-        reds[diff[fil]]=sprintf("%s %s%s\n", reds[diff[fil]], escapedFile, (fil in newModules)? " (new file)" : "")
+        reds[diff[fil]]=sprintf("%s `%s`%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
     if ((all == 0) && (ghLimit/2 <= outputLength)) {
-      escapedCode=sprintf("%sscripts/import_trans_difference.sh all%s", sep, fil, sep)
-      printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run %s locally to see the whole output.", fileCount, outputLength, escapedCode)
+      printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run `scripts/import_trans_difference.sh all` locally to see the whole output.", fileCount, outputLength)
     } else {
       for(x in reds) {
         sorted=""
