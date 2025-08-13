@@ -32,10 +32,11 @@ permissions:
 runs:
   using: "composite"
   steps:
-    - name: Set globals
+    - name: Set the root dir for import diffs
       id: globals
       shell: bash
       run: |
+        # Set the root dir for import diffs
         if [ -n "${{ inputs.ROOT_DIR }}" ]
         then
           rootDir="${{ inputs.ROOT_DIR }}"
@@ -46,9 +47,6 @@ runs:
         printf $'Import diffs take into account the following directory:\n'
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
-    ## Runs the `date` command in bash and outputs the date/time.
-    #- name: Run command
-    #  shell: ${{ steps.globals.outputs.TEST_ACTION_SHELL }}
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
