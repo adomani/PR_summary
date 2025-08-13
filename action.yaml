@@ -281,7 +281,7 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        printf 'report<<DECL_DIFF_REPORT\n\n\n---\n\n%s\nDECL_DIFF_REPORT\n' "${declDiff}" |
+        printf 'report<<DECL_DIFF_REPORT\n%s\nDECL_DIFF_REPORT\n' "${declDiff}" |
           sed 's=`=${{ steps.globals.outputs.separator }}=g' |
           tee -a "${GITHUB_OUTPUT}"
 
@@ -296,12 +296,15 @@ runs:
         report="$(
             if [ -s moved_without_deprecation.txt ]
             then
-              printf '\n\n---\n\n'
+              #printf '\n\n---\n\n'
               cat moved_without_deprecation.txt
+            fi
+            if [ -s moved_without_deprecation.txt ] && [ -s extraneous_deprecated_module.txt ]
+            then
+              printf '\n\n---\n\n'
             fi
             if [ -s extraneous_deprecated_module.txt ]
             then
-              printf '\n\n---\n\n'
               cat extraneous_deprecated_module.txt
             fi
           )"
@@ -324,7 +327,7 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          printf $'report<<CUSTOM_REPORT_SCRIPT\n\n\n---\n\n%s\nCUSTOM_REPORT_SCRIPT\n' "${report}" |
+          printf $'report<<CUSTOM_REPORT_SCRIPT\n%s\nCUSTOM_REPORT_SCRIPT\n' "${report}" |
             sed 's=`=${{ steps.globals.outputs.separator }}=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
@@ -358,7 +361,7 @@ runs:
         if [ -n "${1}" ]
         then
           printf $'Appending \'%s[...]\' to %s' "${1:0:20}" "${summaryFile}"
-          printf '%s\n' "${1}" |
+          printf '\n\n---\n\n%s\n' "${1}" |
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
         fi
         }
