@@ -6,7 +6,7 @@ author: "Damiano Testa"
 
 inputs:
   GITHUB_TOKEN:
-    description: 'Token used to access the GitHub API. When in doubt, set this to the value of secrets.GITHUB_TOKEN.'
+    description: 'Token used to access the GitHub API to post comments and manage labels. If unset, it uses a default value. You could alternatively set to secrets.GITHUB_TOKEN or another token of your choice.'
     required: false
     default: ${{ github.token }}
   MAIN_BRANCH:
@@ -61,9 +61,8 @@ runs:
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
 
-        BRANCH="${{ github.head_ref }}"
-        printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'\n' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
-        git checkout "${BRANCH}"
+        printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'\n' "${{ inputs.MAIN_BRANCH }}" "${{ github.head_ref }}"
+        git checkout "${{ github.head_ref }}"
         if git merge "origin/${{ inputs.MAIN_BRANCH }}" --no-ff --no-commit
         then
           git merge --abort || true
@@ -92,16 +91,22 @@ runs:
         # Get changed and removed/renamed files
         git fetch origin ${{ inputs.MAIN_BRANCH }}  # fetch the base branch
 
+        tallyFile () {
+          local number="$(wc -l < "${1}")"
+          local ess="s"
+          if [ "${number}" == "1" ]; then ess=""; fi
+          printf $'%s %s%s.\n' "${number}" "${1//_/ }" "${ess}"
+        }
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
         git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > changed_files.txt
-        printf $'%s changed files.\n' "$(wc -l < changed_files.txt)"
+        tallyFile changed_files.txt
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
         git diff --name-only --diff-filter D origin/${{ inputs.MAIN_BRANCH }}... > removed_files.txt
-        printf $'%s removed files.\n' "$(wc -l < removed_files.txt)"
+        tallyFile removed_files.txt
         echo "Checking for renamed files..."
 
         # Shows the `R`enamed files, in human readable format
@@ -124,7 +129,7 @@ runs:
                   printf("`%s` was renamed to `%s`\n", old, oldNew[old])
                 }
               }' > renamed_files.txt
-        printf $'%s renamed files.\n' "$(wc -l < renamed_files.txt)"
+        tallyFile renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
       shell: bash
