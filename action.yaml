@@ -217,7 +217,7 @@ runs:
         # Import report
 
         SEPARATOR="###0###"
-        printf $'separator=%s\n' "${SEPARATOR}" >> "${GITHUB_OUTPUT}"
+        printf $'separator=%s\n' "${SEPARATOR}" | tee -a "${GITHUB_OUTPUT}"
 
         graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt "${SEPARATOR}")
 
