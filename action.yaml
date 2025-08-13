@@ -270,6 +270,7 @@ runs:
       run: |
         # Declarations diff
 
+        git checkout "${{ github.head_ref }}" --
         echo "Compute Declarations' diff comment"
         declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh" "${{ inputs.MAIN_BRANCH }}")
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
@@ -278,7 +279,6 @@ runs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        #git checkout "${{ github.head_ref }}" --
 
         printf $'Add the declarations diff to the summary file\n'
         printf 'report<<DECL_DIFF_REPORT\n\n\n---\n\n%s\nDECL_DIFF_REPORT\n' "${declDiff}" |
