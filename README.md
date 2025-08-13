@@ -23,6 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: adomani/pr-summary-action@v1
+        with:
+          GITHUB_TOKEN: # optional, defaults to `github.token`
+          MAIN_BRANCH: # optional, defaults to the base branch of the PR
+          ROOT_DIR: # optional, defaults to the dir that is the repo name, with first letter capitalized
+          IMPORT_DIFF: # optional, whether or not the import diff should be reported, defaults to true
+          DECLARATION_SUMMARY: # optional, whether or not the declarations diff should be reported, defaults to true
+          TECH_DEBT_SUMMARY: # optional, whether or not the tech debt summary should be reported, defaults to true
+          REMOVED_FILE_SUMMARY: # optional, whether or not the removed files should be reported, defaults to true
 ```
 
 ---
