@@ -180,8 +180,8 @@ runs:
         # the checkout dance, to avoid a detached head
         git checkout "${{ inputs.MAIN_BRANCH }}"
         git checkout -
-        currentHash="$(git rev-parse HEAD)"
-        printf 'currentHash=%s\ngithubsHash=%s\n' "${currentHash}" "${{ github.event.pull_request.head.sha }}"
+        currentHash="${{ github.event.pull_request.head.sha }}"
+        printf 'currentHash=%s\n' "${currentHash}"
 
         # Checkout the merge base
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
