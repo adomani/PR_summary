@@ -6,7 +6,7 @@ This GitHub Action generates PR summaries, labels, and comments for pull request
 - Counts transitive dependencies
 - Detects declaration differences
 - Generates import graph reports
-- Calculates technical debt metrics
+- Calculates the output of a custom script
 - Updates the pull request with a comment and/or labels
 
 ## Usage
@@ -30,7 +30,7 @@ jobs:
           IMPORT_DIFF: # optional, whether or not the import diff should be reported, defaults to true
           DECLARATION_SUMMARY: # optional, whether or not the declarations diff should be reported, defaults to true
           REMOVED_FILE_SUMMARY: # optional, whether or not the removed files should be reported, defaults to true
-          TECH_DEBT_SUMMARY: # optional, the path of a script in the base branch, whose output is appended to the report, defaults to ''
+          CUSTOM_REPORT_SCRIPT: # optional, the path of a script in the base branch, whose output is appended to the report, defaults to ''
 ```
 
 ---

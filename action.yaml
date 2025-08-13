@@ -29,7 +29,7 @@ inputs:
     description: 'Set to false if the summary should not include removed files reports. The default value is true.'
     required: false
     default: true
-  TECH_DEBT_SUMMARY:
+  CUSTOM_REPORT_SCRIPT:
     description: 'The path to a local script whose output should be included in the summary. The default value is to include nothing else.'
     required: false
     default: ""
@@ -313,9 +313,9 @@ runs:
       shell: bash
       run: |
         # Custom report
-        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.TECH_DEBT_SUMMARY }}"
-        echo "Sourcing ${{ inputs.TECH_DEBT_SUMMARY }}"
-        report="$(./"${{ inputs.TECH_DEBT_SUMMARY }}" pr_summary)"
+        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
+        echo "Sourcing ${{ inputs.CUSTOM_REPORT_SCRIPT }}"
+        report="$(./"${{ inputs.CUSTOM_REPORT_SCRIPT }}" pr_summary)"
         if [ -n "${report}" ]
         then
           printf $'report<<CUSTOM_REPORT_SCRIPT\n\n\n---\n\n%s\nCUSTOM_REPORT_SCRIPT\n' "${report}" |
@@ -359,7 +359,7 @@ runs:
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Custom report ###
-        if [ -z  "${{ inputs.TECH_DEBT_SUMMARY }}" ]
+        if [ -z  "${{ inputs.CUSTOM_REPORT_SCRIPT }}" ]
         then
           printf $'No custom script provided.\n'
         else
