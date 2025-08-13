@@ -382,7 +382,7 @@ runs:
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Custom report ###
-        if [ -z  "${{ inputs.CUSTOM_REPORT_SCRIPT }}" ]
+        if [ -z "${{ inputs.CUSTOM_REPORT_SCRIPT }}" ]
         then
           printf $'No custom script provided.\n'
         else
