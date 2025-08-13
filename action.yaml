@@ -349,18 +349,6 @@ runs:
         printf '\n\n---\n\n%s' "${techDebtVar}" >> "${summaryFile}"
 
         ### Renames ###
-        #echo "Include any errors about removed or renamed files without deprecation,"
-        #echo "as well as errors about extraneous deprecated_module additions."
-        #if [ -s moved_without_deprecation.txt ]
-        #then
-        #  printf '\n\n---\n\n' >> "${summaryFile}"
-        #  cat moved_without_deprecation.txt >> "${summaryFile}"
-        #fi
-        #if [ -s extraneous_deprecated_module.txt ]
-        #then
-        #  printf '\n\n---\n\n' >> "${summaryFile}"
-        #  cat extraneous_deprecated_module.txt >> "${summaryFile}"
-        #fi
         if [ -n "${{ steps.renames.outputs.report }}" ]
         then
           printf $'Add the renamed files to the summary file.\n'
