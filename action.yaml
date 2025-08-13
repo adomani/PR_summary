@@ -283,7 +283,7 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        printf $'report<<DECL_DIFF_REPORT|||||||\n%s\n|||||||DECL_DIFF_REPORT|||||||' "${declDiff}" |
+        printf $'report<<DECL_DIFF_REPORT|||||||%s|||||||DECL_DIFF_REPORT|||||||' "${declDiff}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
                   s=|||||||=\n=' |
