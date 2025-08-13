@@ -64,6 +64,11 @@ runs:
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
+
+        # avoid detached head?
+        git switch "{{ inputs.MAIN_BRANCH }}"
+        git switch -
+
         BRANCH="$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
         printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
         git checkout "${BRANCH}"
