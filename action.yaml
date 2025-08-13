@@ -251,7 +251,7 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        printf 'report<<IMP_DIFF_REP\n%s\n\n%s\nIMP_DIFF_REP\n' "${high_percentages}" "${importCount}" | tee "${GITHUB_OUTPUT}"
+        printf 'report<<IMP_DIFF_REP\n%s\n\n%s\nIMP_DIFF_REP\n' "${high_percentages}" "${importCount}" | tee -a "${GITHUB_OUTPUT}"
 
     - name: Post or update the summary comment
       env:
