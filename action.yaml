@@ -377,6 +377,7 @@ runs:
         ### Declarations ###
         printf $'Add the declarations diff to the summary file\n'
         appendIf "${{ steps.decls_diff.outputs.report }}" #>> "${summaryFile}"
+        printf $'Done\n'
         #printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
