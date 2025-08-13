@@ -274,7 +274,7 @@ runs:
         #git checkout "${{ github.head_ref }}" --
 
         printf $'Add the declarations diff to the summary file\n'
-        printf '\n\n---\n\n%s' "${declDiff}" |
+        printf 'report<<DECL_DIFF_REPORT\n\n\n---\n\n%s\nDECL_DIFF_REPORT\n' "${declDiff}" |
           sed 's=`=${{ steps.globals.outputs.separator }}=g' |
           tee -a "${GITHUB_OUTPUT}"
 
@@ -307,7 +307,7 @@ runs:
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         printf $'Add the declarations diff to the summary file\n'
-        printf '\n\n---\n\n%s' "${declDiff}" |
+        printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         echo "Compute technical debt changes"
