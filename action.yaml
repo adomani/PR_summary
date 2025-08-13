@@ -109,6 +109,7 @@ runs:
         # If you have additional dependencies, install them here
 
     - name: Get changed and removed/renamed files
+      if: inputs.REMOVED_FILE_DIFF == 'true'
       shell: bash
       run: |
         # Get changed and removed/renamed files
@@ -155,6 +156,7 @@ runs:
         tallyFile renamed_files.txt
 
     - name: Compute (re)moved files without deprecation
+      if: inputs.REMOVED_FILE_DIFF == 'true'
       shell: bash
       run: |
         # Compute (re)moved files without deprecation
@@ -199,6 +201,7 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Compute transitive imports
+      if: inputs.IMPORT_DIFF == 'true'
       shell: bash
       run: |
         # Compute transitive imports
