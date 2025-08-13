@@ -68,6 +68,12 @@ runs:
         # Set the custom separator to escape backticks
         printf $'separator=%s\n' "$(date | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
 
+        # Set the custom separator to escape line breaks
+        printf $'LB=%s\n' "$(date --date="yesterday" | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
+
+        # Set the custom EOF marker
+        printf $'EOF=%s\n' "$(date --date="tomorrow" | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
+
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
@@ -259,10 +265,10 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        printf $'report<<IMP_DIFF_REP|||||||\n%s\n\n%s\n|||||||IMP_DIFF_REP|||||||' "${high_percentages}" "${importCount}" |
+        printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${high_percentages}" "${importCount}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||||||=\n=g' |
+                  s=@{{ steps.globals.outputs.LB }}=\n=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
@@ -283,10 +289,10 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        printf $'report<<DECL_DIFF_REPORT|||||||%s|||||||DECL_DIFF_REPORT|||||||' "${declDiff}" |
+        printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}%s@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${declDiff}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||||||=\n=g' |
+                  s=@{{ steps.globals.outputs.LB }}=\n=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Renames
@@ -314,10 +320,10 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          printf $'report<<RENAMED_FILES_REPORT|||||||\n%s\n|||||||RENAMED_FILES_REPORT|||||||' "${report}" |
+          printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||||||=\n=g' |
+                    s=@{{ steps.globals.outputs.LB }}=\n=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -333,10 +339,10 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          printf $'report<<CUSTOM_REPORT_SCRIPT|||||||\n%s\n|||||||CUSTOM_REPORT_SCRIPT|||||||' "${report}" |
+          printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||||||=\n=g' |
+                    s=@{{ steps.globals.outputs.LB }}=\n=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
