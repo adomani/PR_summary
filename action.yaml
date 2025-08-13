@@ -50,7 +50,6 @@ runs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
-        path: pr-branch
 
     - name: Update the merge-conflict label
       env:
@@ -58,7 +57,6 @@ runs:
       shell: bash
       run: |
         # Update the merge-conflict label
-        cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
@@ -92,7 +90,6 @@ runs:
       shell: bash
       run: |
         # Get changed and removed/renamed files
-        cd pr-branch
         git fetch origin ${{ inputs.MAIN_BRANCH }}  # fetch the base branch
 
         # Get the list of all changed files.
@@ -133,7 +130,6 @@ runs:
       shell: bash
       run: |
         # Compute (re)moved files without deprecation
-        cd pr-branch
         touch moved_without_deprecation.txt
         touch extraneous_deprecated_module.txt
         git checkout ${{ github.base_ref }}
@@ -178,7 +174,6 @@ runs:
       shell: bash
       run: |
         # Compute transitive imports
-        cd pr-branch
 
         currentHash="${{ github.event.pull_request.head.sha }}"
         printf 'currentHash=%s\n' "${currentHash}"
@@ -201,7 +196,7 @@ runs:
       shell: bash
       run: |
         # Post or update the summary comment
-        cd pr-branch
+
         git checkout "${{ github.head_ref }}"
         currentHash="${{ github.event.pull_request.head.sha }}"
         shortHash="$(git rev-parse --short HEAD)"
@@ -279,7 +274,8 @@ runs:
         GH_TOKEN: ${{ github.token }}
       shell: bash
       run: |
-        cd pr-branch
+        # Update the file-removed label
+
         git checkout "${{ github.head_ref }}"
         undeprecatedMoves="$(cat moved_without_deprecation.txt)"
         if [ -n "$undeprecatedMoves" ]; then
