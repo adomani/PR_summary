@@ -1,18 +1,25 @@
 #! /usr/bin/env python3
 
 # This script compares the counts of dependencies between two JSON files.
-# It takes two file paths as command line arguments,
-# loads the counts from each file, and then compares the counts.
+# It takes three file paths (`base_file`, `head_file`, `changed_files`)
+# as command line arguments, and a string (`separator`).
+# It loads the counts from `base_file` and `head_file`, compares the counts,
+# for each file appearing in `changed_files`.
 # It identifies dependencies that have either decreased or increased,
 # and generates a message with a summary of the changes.
 # The message is printed to the console.
+# The final string variable input (`separator`) is what gets printed instead
+# of a backtick, since passing backticks into github variables makes it
+# virtually impossible to escape them.
+# The `separator` string gets later replaced by a backtick, when composing the final message.
+
 
 import json
 import sys
 
 high_import_threshold = 2
 
-def compare_counts(base_file, head_file, changed_files_txt, separator):
+def compare_counts(base_file, head_file, changed_files, separator):
     # Load the counts
     with open(head_file, 'r') as f:
         head_counts = json.load(f)
@@ -20,7 +27,7 @@ def compare_counts(base_file, head_file, changed_files_txt, separator):
         base_counts = json.load(f)
 
     # Load the changed files
-    with open(changed_files_txt, 'r') as f:
+    with open(changed_files, 'r') as f:
         changed_files = [line.strip() for line in f]
 
     # Filter for .lean files, replace / with . in the path, and drop the .lean extension
@@ -76,8 +83,8 @@ def compare_counts(base_file, head_file, changed_files_txt, separator):
 if __name__ == '__main__':
     base_file = sys.argv[1]
     head_file = sys.argv[2]
-    changed_files_txt = sys.argv[3]
+    changed_files = sys.argv[3]
     separator = sys.argv[4]
-    (message, high_pct) = compare_counts(base_file, head_file, changed_files_txt, separator)
+    (message, high_pct) = compare_counts(base_file, head_file, changed_files, separator)
     print(message)
     print(high_pct)
