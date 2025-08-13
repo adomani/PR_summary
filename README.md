@@ -56,6 +56,5 @@ pr-summary-action/
 │ ├── declarations_diff.sh
 │ ├── import-graph-report.py
 │ ├── import_trans_difference.sh
-│ ├── technical-debt-metrics.sh
 │ └── update_PR_comment.sh
 ```
