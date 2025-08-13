@@ -93,9 +93,9 @@ runs:
 
         tallyFile () {
           local number="$(wc -l < "${1}")"
-          local ess="s"
-          if [ "${number}" == "1" ]; then ess=""; fi
-          printf $'%s %s%s.\n' "${number}" "${1//_/ }" "${ess}"
+          local type="${1//_/ }"
+          if [ "${number}" == "1" ]; then type="${type%s.txt/}"; else type="${type%.txt/}"; fi
+          printf $'%s %s.\n' "${number}" "${type}"
         }
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
