@@ -62,15 +62,15 @@ getTransImports () {
     tr -d ' "{}:'
 }
 
-git checkout "${commit1}"
+>&2 git checkout "${commit1}"
 #git checkout "${mainBranch}" scripts/count-trans-deps.py
 getTransImports > transImports1.txt
-git checkout "${currCommit}"
+>&2 git checkout "${currCommit}"
 
-git checkout "${commit2}"
+>&2 git checkout "${commit2}"
 #git checkout "${mainBranch}" scripts/count-trans-deps.py
 getTransImports - > transImports2.txt
-git checkout "${currCommit}"
+>&2 git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"

@@ -212,8 +212,6 @@ runs:
 
         echo "Produce import count comment"
         importCount=$(
-          #mainBranch="${{ inputs.MAIN_BRANCH }}"
-          #rootDir="${{ steps.globals.outputs.rootDir }}"
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
           "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}"
         )
