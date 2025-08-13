@@ -98,12 +98,13 @@ runs:
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
         git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > changed_files.txt
-
+        printf $'%s changed files.\n' "$(wc -l < changed_files.txt)"
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
         git diff --name-only --diff-filter D origin/${{ inputs.MAIN_BRANCH }}... > removed_files.txt
+        printf $'%s removed files.\n' "$(wc -l < removed_files.txt)"
         echo "Checking for renamed files..."
 
         # Shows the `R`enamed files, in human readable format
@@ -126,6 +127,7 @@ runs:
                   printf("`%s` was renamed to `%s`\n", old, oldNew[old])
                 }
               }' > renamed_files.txt
+        printf $'%s renamed files.\n' "$(wc -l < renamed_files.txt)"
 
     - name: Compute (re)moved files without deprecation
       shell: bash
