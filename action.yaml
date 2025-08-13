@@ -315,7 +315,7 @@ runs:
         # Custom report
         git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
         echo "Sourcing ${{ inputs.CUSTOM_REPORT_SCRIPT }}"
-        report="$(./"${{ inputs.CUSTOM_REPORT_SCRIPT }}" pr_summary)"
+        report="$(eval "${{ inputs.CUSTOM_REPORT_SCRIPT }}")"
         if [ -n "${report}" ]
         then
           printf $'report<<CUSTOM_REPORT_SCRIPT\n\n\n---\n\n%s\nCUSTOM_REPORT_SCRIPT\n' "${report}" |
