@@ -12,7 +12,7 @@ import sys
 
 high_import_threshold = 2
 
-def compare_counts(base_file, head_file, changed_files_txt):
+def compare_counts(base_file, head_file, changed_files_txt, separator):
     # Load the counts
     with open(head_file, 'r') as f:
         head_counts = json.load(f)
@@ -40,7 +40,7 @@ def compare_counts(base_file, head_file, changed_files_txt):
         diff = head_count - base_count
         percent = (diff / base_count) * 100
         if high_import_threshold < percent:
-            high_pct.append(f'| +{percent:.2f}% | ``{file}`` |')
+            high_pct.append(f'| +{percent:.2f}% | {separator}{file}{separator} |')
         if diff < 0:  # Dependencies went down
             changes.append((file, base_count, head_count, diff, percent))
         elif diff > new_files:  # Dependencies went up by more than the number of new files
@@ -77,6 +77,7 @@ if __name__ == '__main__':
     base_file = sys.argv[1]
     head_file = sys.argv[2]
     changed_files_txt = sys.argv[3]
-    (message, high_pct) = compare_counts(base_file, head_file, changed_files_txt)
+    separator = sys.argv[4]
+    (message, high_pct) = compare_counts(base_file, head_file, changed_files_txt, separator)
     print(message)
     print(high_pct)
