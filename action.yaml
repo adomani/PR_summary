@@ -271,7 +271,7 @@ runs:
         fi
         git checkout "${currentHash}" --
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
-        printf 'hashURL: %s' "${hashURL}"
+        printf 'hashURL: %s\n' "${hashURL}"
 
         echo "Compute technical debt changes"
         techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
