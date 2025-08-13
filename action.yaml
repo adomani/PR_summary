@@ -167,7 +167,12 @@ runs:
         #git checkout -
 
     - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      run: |
+        printf $'Looking for the \'count-trans-deps.py\' script file, in case there are issues with the path:\n'
+        find /home/runner/ -name 'count-trans-deps.py'
+        path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
+        printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
+        echo "$GITHUB_ACTION_PATH" | tee -a "${GITHUB_PATH}"
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
@@ -177,34 +182,21 @@ runs:
       run: |
         # Compute transitive imports
         cd pr-branch
-        # the checkout dance, to avoid a detached head
-        #git checkout "${{ inputs.MAIN_BRANCH }}"
-        #git checkout -
-
-        # Return to the PR branch
-        # git checkout "${{ github.head_ref }}"
 
         currentHash="${{ github.event.pull_request.head.sha }}"
         printf 'currentHash=%s\n' "${currentHash}"
 
-        # Checkout the merge base
+        printf $'Checkout the merge base\n'
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
-        find /home/runner/ -iname '*count-trans-deps.py*'
-        path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
-        printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
-        echo "Compute the counts for the HEAD of the PR"
-        #python "${path}/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > head.json
-        #ls ${GITHUB_ACTION_PATH}/
-        #ls ${GITHUB_ACTION_PATH}/scripts
-        #echo "What is available here?"
-        #ls
-        #echo "head of ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
-        #head "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py"
-
-        python ${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py "${{ steps.globals.outputs.rootDir }}/" > head.json
         echo "Compute the counts for the merge base"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > base.json
+
+        printf $'Checkout the \'%s\' branch\n' "${{ github.head_ref }}"
+        git checkout "${{ github.head_ref }}"
+
+        echo "Compute the counts for the HEAD of the PR"
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > head.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
