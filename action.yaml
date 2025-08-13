@@ -181,7 +181,7 @@ runs:
         git checkout "${{ inputs.MAIN_BRANCH }}"
         git checkout -
         currentHash="$(git rev-parse HEAD)"
-        printf 'currentHash=%s\n' "${currentHash}"
+        printf 'currentHash=%s\ngithubsHash=%s\n' "${currentHash}" "${{ github.event.pull_request.head.sha }}"
 
         # Checkout the merge base
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
