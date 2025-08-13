@@ -10,6 +10,9 @@ IFS=$'\n\t'
 outputs a full diff of the change of transitive imports in all the files between
 `<opt_commit1>` and `<opt_commit2>`,
 using `mainBranch` for the "reference" branch and looking at imports of files contained in `rootDir`.
+The `separator` input is what gets printed instead of a backtick, since passing backticks into github
+variables makes it virtually impossible to escape them.
+The `separator` string gets later replaced by a backtick, when composing the final message.
 
 The optional flag `<opt all>` must either be `all` or not be passed.
 Without `all`, the script only displays the difference if the output does not exceed 200 lines.
