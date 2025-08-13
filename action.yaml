@@ -278,7 +278,7 @@ runs:
         printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
 
         printf $'Add import report to the summary file\n'
-        printf '%s\n' "${{ steps.import_diff.outputs.report }}" | sed 's=${{ steps.import_diff.outputs.separator }}=`=g' >> "${summaryFile}"
+        printf '%s\n' "${{ steps.import_diff.outputs.report }}" | sed 's='"${{ steps.import_diff.outputs.separator }}"'=`=g' >> "${summaryFile}"
 
         echo "Compute Declarations' diff comment"
         declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh")
