@@ -180,9 +180,6 @@ runs:
       run: |
         # Compute transitive imports
 
-        currentHash="${{ github.event.pull_request.head.sha }}"
-        printf 'currentHash=%s\n' "${currentHash}"
-
         printf $'Checkout the merge base\n'
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
@@ -203,7 +200,6 @@ runs:
         # Post or update the summary comment
 
         git checkout "${{ github.head_ref }}"
-        currentHash="${{ github.event.pull_request.head.sha }}"
         shortHash="$(git rev-parse --short HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
@@ -224,13 +220,12 @@ runs:
         echo "High percentage imports produced"
         if [ -n "${high_percentages}" ]
         then
-          echo "Large import found"
+          echo "Large import found, adding \'large-import\' label."
           high_percentages=$'\n\n'"${high_percentages}"
           gh pr edit "${PR}" --add-label large-import
         else # otherwise, we remove the label
-          printf $'No large import found for PR %s\n' "${PR}"
+          printf $'No large import found for PR %s, removing \'large-import\' label.\n' "${PR}"
           gh pr edit "${PR}" --remove-label large-import
-          printf $'large-import label removed.\n'
         fi
 
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
@@ -249,7 +244,7 @@ runs:
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
         git checkout "${{ github.head_ref }}" --
-        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
         printf 'hashURL: %s\n' "${hashURL}"
 
         echo "Compute technical debt changes"
