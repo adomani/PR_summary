@@ -302,6 +302,7 @@ runs:
         if [ -n "${report}" ]
         then
           printf $'report<<RENAMED_FILES_REPORT\n%s\nRENAMED_FILES_REPORT\n' "${report}" |
+            sed 's=`=${{ steps.globals.outputs.separator }}=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -363,7 +364,8 @@ runs:
         if [ -n "${{ steps.renames.outputs.report }}" ]
         then
           printf $'Add the renamed files to the summary file.\n'
-          printf '%s\n' "${{ steps.renames.outputs.report }}" >> "${summaryFile}"
+          printf '%s\n' "${{ steps.renames.outputs.report }}" |
+          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
         else
           printf $'No renamed files to report.\n'
         fi
