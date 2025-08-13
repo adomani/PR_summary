@@ -61,10 +61,6 @@ runs:
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
 
-        # avoid detached head?
-        git checkout "${{ inputs.MAIN_BRANCH }}"
-        git checkout -
-
         BRANCH="${{ github.head_ref }}"
         printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'\n' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
         git checkout "${BRANCH}"
