@@ -361,8 +361,9 @@ runs:
         if [ -n "${1}" ]
         then
           printf $'Appending \'%s[...]\' to %s' "$(printf '%s' "${1:0:20}" | sed -z 's=\n=⏎=g')" "${summaryFile}"
-          printf '\n\n---\n\n%s\n' "${1}" |
-          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+          { printf '\n\n---\n\n%s\n' "${1}" |
+            sed 's=${{ steps.globals.outputs.separator }}=`=g'
+          } >> "${summaryFile}"
         fi
         }
 
