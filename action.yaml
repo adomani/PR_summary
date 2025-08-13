@@ -25,7 +25,7 @@ inputs:
     description: 'Set to false if the summary should not include the declarations diff. The default value is true.'
     required: false
     default: true
-  REMOVED_FILE_SUMMARY:
+  REMOVED_FILE_DIFF:
     description: 'Set to false if the summary should not include removed files reports. The default value is true.'
     required: false
     default: true
@@ -283,8 +283,7 @@ runs:
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Renames
-      #env:
-      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      if: inputs.REMOVED_FILE_DIFF == 'true'
       id: renames
       shell: bash
       run: |

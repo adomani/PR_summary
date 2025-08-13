@@ -22,7 +22,7 @@ Create a workflow in your repository (e.g., `.github/workflows/pr_summary.yml`):
     ROOT_DIR: # optional, defaults to the dir that is the repo name, with first letter capitalized
     IMPORT_DIFF: # optional, whether or not the import diff should be reported, defaults to true
     DECLARATION_DIFF: # optional, whether or not the declarations diff should be reported, defaults to true
-    REMOVED_FILE_SUMMARY: # optional, whether or not the removed files should be reported, defaults to true
+    REMOVED_FILE_DIFF: # optional, whether or not the removed files should be reported, defaults to true
     CUSTOM_REPORT_SCRIPT: # optional, the path of a script in the base branch, whose output is appended to the report, defaults to ''
     CUSTOM_REPORT_SCRIPT_ARGUMENTS: # optional, the arguments to be passed to the script in `CUSTOM_REPORT_SCRIPT`, defaults to ''
 ```
@@ -48,7 +48,7 @@ jobs:
         with:
           MAIN_BRANCH: master
           # We want to omit the reporting of removed files.
-          REMOVED_FILE_SUMMARY: false
+          REMOVED_FILE_DIFF: false
           # A local script whose output we want to add to the PR summary
           CUSTOM_REPORT_SCRIPT: ".src/technical-debt-metrics.sh"
           # The two inputs to the local script
