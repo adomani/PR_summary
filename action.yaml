@@ -357,6 +357,7 @@ runs:
         appendIf () {
         if [ -n "${1}" ]
         then
+          printf $'Appending \'%s[...]\' to %s' "${1:0:20}" "${summaryFile}"
           printf '%s\n' "${1}" |
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
         fi
