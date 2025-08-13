@@ -164,7 +164,7 @@ runs:
         done < renamed_files.txt
 
         # we return to the PR branch, since the next step wants it!
-        git checkout -
+        #git checkout -
 
     - name: Set GitHub Path
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
@@ -178,8 +178,12 @@ runs:
         # Compute transitive imports
         cd pr-branch
         # the checkout dance, to avoid a detached head
-        git checkout "${{ inputs.MAIN_BRANCH }}"
-        git checkout -
+        #git checkout "${{ inputs.MAIN_BRANCH }}"
+        #git checkout -
+
+        # Return to the PR branch
+        # git checkout "${{ github.head_ref }}"
+
         currentHash="${{ github.event.pull_request.head.sha }}"
         printf 'currentHash=%s\n' "${currentHash}"
 
