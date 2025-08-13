@@ -340,9 +340,9 @@ runs:
         # Post or update the summary comment
 
         summaryFile=please_merge_the_main_branch.md
-        appendSummary () {
-          printf $'%s\n---\n' "${1}" >> "${summaryFile}"
-        }
+        #appendSummary () {
+        #  printf $'%s\n---\n' "${1}" >> "${summaryFile}"
+        #}
         git checkout "${{ github.head_ref }}"
 
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
@@ -370,7 +370,7 @@ runs:
         printf $'Add import report to the summary file\n'
         #var="${{ steps.import_diff.outputs.report }}"
         #printf $'%s\n' "${{ steps.import_diff.outputs.report }}"
-        appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
+        #appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
         #printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
