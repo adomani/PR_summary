@@ -37,7 +37,9 @@ runs:
         then
           rootDir="${{ inputs.ROOT_DIR }}"
         else
+          # Strip out the name of owner of the repo to expose the just the name of the repo
           rootDir="${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}"
+          # Capitalize the first letter of the name of the repo
           rootDir="${rootDir^}"
         fi
         printf $'Import diffs take into account the following directory:\n'
