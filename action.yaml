@@ -77,7 +77,7 @@ runs:
         git checkout -
 
         BRANCH="${{ github.head_ref }}" #"$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
-        printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
+        printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'\n' "${{ inputs.MAIN_BRANCH }}" "${BRANCH}"
         git checkout "${BRANCH}"
         if git merge "origin/${{ inputs.MAIN_BRANCH }}" --no-ff --no-commit
         then
