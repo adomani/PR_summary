@@ -311,6 +311,7 @@ runs:
 
     - name: Custom report
       # Do not give access to the token.  Consider adding a second token input for this step.
+      if: ${{ ! inputs.CUSTOM_REPORT_SCRIPT }}
       id: custom
       shell: bash
       run: |
