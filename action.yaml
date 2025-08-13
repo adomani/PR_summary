@@ -9,13 +9,18 @@ inputs:
     description: 'Token used to access the GitHub API. When in doubt, set this to the value of secrets.GITHUB_TOKEN.'
     required: false
     default: ${{ github.token }}
+  MAIN_BRANCH:
+    description: 'The name of the main branch against which to compare the changes. The default is master'
+    required: false
+    default: master
+  ROOT_DIR:
+    description: 'The name of the main directory used for import changes. The default is the name of the repository, with the first letter capitalized.'
+    required: false
+    default: ''
 
 #env:
 #  GH_TOKEN: ${{ github.token }}
 #  rootDir: "Advents"    # make this an input
-#  mainBranch: "master"  # make this an input
-  #GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 
 
 permissions:
@@ -31,8 +36,15 @@ runs:
       id: globals
       shell: bash
       run: |
-        echo "mainBranch=master" >> "${GITHUB_OUTPUT}"    # make this an input
-        echo "rootDir=Advents"   >> "${GITHUB_OUTPUT}"    # make this an input
+        if [ -n "${{ inputs.ROOT_DIR }}" ]
+        then
+          rootDir="${{ inputs.ROOT_DIR }}"
+        else
+          rootDir="${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}"
+          rootDir="${rootDir^}"
+        fi
+        printf $'Import diffs take into account the following directory:\n'
+        echo "rootDir=${rootDir} | tee -a "${GITHUB_OUTPUT}"
 
     ## Runs the `date` command in bash and outputs the date/time.
     #- name: Run command
@@ -54,18 +66,18 @@ runs:
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
-        printf $'Using \'%s\' as main branch.\n' "${{ steps.globals.outputs.mainBranch }}"
-        if git merge "origin/${{ steps.globals.outputs.mainBranch }}" --no-ff --no-commit
+        printf $'Using \'%s\' as main branch.\n' "${{ inputs.MAIN_BRANCH }}"
+        if git merge "origin/${{ inputs.MAIN_BRANCH }}" --no-ff --no-commit
         then
           git merge --abort || true
-          printf $'This PR does not have merge conflicts with %s.\nRemoving \'merge-conflict\' label, if present.' "${{ steps.globals.outputs.mainBranch }}"
+          printf $'This PR does not have merge conflicts with %s.\nRemoving \'merge-conflict\' label, if present.' "${{ inputs.MAIN_BRANCH }}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
             --header 'authorization: Bearer "${GH_TOKEN}"'
         else
-          printf $'This PR has merge conflicts with %s.\n' "${{ steps.globals.outputs.mainBranch }}"
+          printf $'This PR has merge conflicts with %s.\n' "${{ inputs.MAIN_BRANCH }}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request POST \
@@ -176,13 +188,13 @@ runs:
         # Compute transitive imports
         cd pr-branch
         # the checkout dance, to avoid a detached head
-        git checkout "${{ steps.globals.outputs.mainBranch }}"
+        git checkout "${{ inputs.MAIN_BRANCH }}"
         git checkout -
         currentHash="$(git rev-parse HEAD)"
         printf 'currentHash=%s\n' "${currentHash}"
 
         # Checkout the merge base
-        git checkout "$(git merge-base "${{ steps.globals.outputs.mainBranch }}" ${{ github.event.pull_request.head.sha }})"
+        git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
         find /home/runner/ -iname '*count-trans-deps.py*'
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
@@ -219,10 +231,10 @@ runs:
 
         echo "Produce import count comment"
         importCount=$(
-          #mainBranch="${{ steps.globals.outputs.mainBranch }}"
+          #mainBranch="${{ inputs.MAIN_BRANCH }}"
           #rootDir="${{ steps.globals.outputs.rootDir }}"
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ steps.globals.outputs.mainBranch }}" "${{ steps.globals.outputs.rootDir }}"
+          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"
