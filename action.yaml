@@ -66,7 +66,7 @@ runs:
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
         # Set the custom separator to escape backticks
-        printf $'separator=%s\n' "###0###" | tee -a "${GITHUB_OUTPUT}"
+        printf $'separator=%s\n' "$(date | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
 
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
