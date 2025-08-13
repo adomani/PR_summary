@@ -265,10 +265,7 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${high_percentages}" "${importCount}" |
-          sed -z 's=`=${{ steps.globals.outputs.separator }}=g
-                  s=\n=777=g
-                  s=@{{ steps.globals.outputs.LB }}=\n=g' |
+        format encode "$(printf $'%s\n\n%s' "${high_percentages}" "${importCount}" |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
@@ -289,10 +286,7 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}%s@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${declDiff}" |
-          sed -z 's=`=${{ steps.globals.outputs.separator }}=g
-                  s=\n=777=g
-                  s=@{{ steps.globals.outputs.LB }}=\n=g' |
+        format encode "$(printf $'%s' "${declDiff}" |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Renames
@@ -320,10 +314,7 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${report}" |
-            sed -z 's=`=${{ steps.globals.outputs.separator }}=g
-                    s=\n=777=g
-                    s=@{{ steps.globals.outputs.LB }}=\n=g' |
+          format encode "$(printf $'%s' "${report}" |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -339,10 +330,7 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          printf $'report<<${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}\n%s\n@{{ steps.globals.outputs.LB }}${{ steps.globals.outputs.EOF }}@{{ steps.globals.outputs.LB }}' "${report}" |
-            sed -z 's=`=${{ steps.globals.outputs.separator }}=g
-                    s=\n=777=g
-                    s=@{{ steps.globals.outputs.LB }}=\n=g' |
+          format encode "$(printf $'%s' "${report}" |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -375,22 +363,21 @@ runs:
         if [ -n "${1}" ]
         then
           >&2 printf $'Appending \'%s[...]\' to %s\n' "$(printf '%s' "${1:0:50}" | sed -z 's=\n=⏎=g')" "${summaryFile}"
-          printf $'\n\n---\n\n%s\n' "${1}" #|
-            #sed 's=${{ steps.globals.outputs.separator }}=`=g'
-        fi #>> "${summaryFile}"
+          printf $'\n\n---\n\n%s\n' "$(format decode "${1}")" >> "${summaryFile}"
+        fi
         }
 
         ### Imports ###
         printf $'Add import report to the summary file\n'
         #var="${{ steps.import_diff.outputs.report }}"
         #printf $'%s\n' "${{ steps.import_diff.outputs.report }}"
-        #appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
+        appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
         #printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Declarations ###
         printf $'Add the declarations diff to the summary file\n'
-        #appendIf "${{ steps.decls_diff.outputs.report }}" >> "${summaryFile}"
+        appendIf "${{ steps.decls_diff.outputs.report }}" >> "${summaryFile}"
         printf $'Done\n'
         #printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
