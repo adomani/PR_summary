@@ -163,9 +163,6 @@ runs:
           fi
         done < renamed_files.txt
 
-        # we return to the PR branch, since the next step wants it!
-        #git checkout -
-
     - name: Set GitHub Path
       run: |
         printf $'Looking for the \'count-trans-deps.py\' script file, in case there are issues with the path:\n'
@@ -198,9 +195,6 @@ runs:
         echo "Compute the counts for the HEAD of the PR"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
 
-        # switch back to the current branch: the `declarations_diff` script should be here
-        git checkout "${currentHash}" --
-
     - name: Post or update the summary comment
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
@@ -208,7 +202,8 @@ runs:
       run: |
         # Post or update the summary comment
         cd pr-branch
-        currentHash="$(git rev-parse HEAD)"
+        git checkout "${{ github.head_ref }}"
+        currentHash="${{ github.event.pull_request.head.sha }}"
         shortHash="$(git rev-parse --short HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
