@@ -31,6 +31,7 @@ jobs:
           DECLARATION_SUMMARY: # optional, whether or not the declarations diff should be reported, defaults to true
           REMOVED_FILE_SUMMARY: # optional, whether or not the removed files should be reported, defaults to true
           CUSTOM_REPORT_SCRIPT: # optional, the path of a script in the base branch, whose output is appended to the report, defaults to ''
+          CUSTOM_REPORT_SCRIPT_ARGUMENTS: # optional, the arguments to be passed to the script in `CUSTOM_REPORT_SCRIPT`, defaults to ''
 ```
 
 ---

@@ -311,8 +311,7 @@ runs:
         fi
 
     - name: Custom report
-      env:
-        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      # Do not give access to the token.  Consider adding a second token input for this step.
       id: custom
       shell: bash
       run: |
