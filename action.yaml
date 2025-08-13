@@ -216,6 +216,7 @@ runs:
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
 
     - name: Import report
+      if: ${{ inputs.IMPORT_DIFF }} == true
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
       id: import_diff
