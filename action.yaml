@@ -224,6 +224,7 @@ runs:
         # Post or update the summary comment
         cd pr-branch
         currentHash="$(git rev-parse HEAD)"
+        shortHash="$(git rev-parse --short HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
@@ -277,7 +278,7 @@ runs:
         techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
-        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_the_main_branch.md
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "${shortHash}" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_the_main_branch.md
 
         echo "Include any errors about removed or renamed files without deprecation,"
         echo "as well as errors about extraneous deprecated_module additions."
