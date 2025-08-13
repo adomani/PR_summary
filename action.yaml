@@ -253,6 +253,16 @@ runs:
         printf $'Add import report to the summary file\n'
         printf 'report<<IMP_DIFF_REP\n%s\n\n%s\nIMP_DIFF_REP\n' "${high_percentages}" "${importCount}" | tee -a "${GITHUB_OUTPUT}"
 
+    - name: Declarations diff
+      #env:
+      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      id: decls_diff
+      shell: bash
+      run: |
+        # Declarations diff
+        printf $'\n'
+
+
     - name: Post or update the summary comment
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
@@ -279,7 +289,7 @@ runs:
 
         printf $'Add import report to the summary file\n'
         printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
-          sed 's='"${{ steps.import_diff.outputs.separator }}"'=`=g' >> "${summaryFile}"
+          sed 's='"${{ steps.globals.outputs.separator }}"'=`=g' >> "${summaryFile}"
 
         echo "Compute Declarations' diff comment"
         declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh")
