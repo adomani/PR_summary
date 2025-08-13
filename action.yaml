@@ -211,13 +211,14 @@ runs:
     - name: Import report
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
-        SEPARATOR: "###0###"
       id: import_diff
       shell: bash
       run: |
         # Import report
         graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt)
 
+        SEPARATOR="###0###"
+        printf $'separator=%s' "${SEPARATOR}" >> "${GITHUB_OUTPUT}"
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
@@ -275,7 +276,7 @@ runs:
         printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
 
         printf $'Add import report to the summary file\n'
-        printf '%s\n' "${{ steps.import_diff.outputs.report }}" | sed 's='"${SEPARATOR}"'=`=g' >> "${summaryFile}"
+        printf '%s\n' "${{ steps.import_diff.outputs.report }}" | sed 's=${{ steps.import_diff.outputs.separator }}'=`=g' >> "${summaryFile}"
 
         echo "Compute Declarations' diff comment"
         declDiff=$("${GITHUB_ACTION_PATH}/scripts/declarations_diff.sh")
