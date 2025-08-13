@@ -169,7 +169,7 @@ runs:
               tee -a extraneous_deprecated_module.txt
           else
             # shellcheck disable=SC2016
-            printf '\nnote: file `%s` without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
+            printf '\nnote: file %s without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
         done < renamed_files.txt
