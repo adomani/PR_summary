@@ -64,7 +64,9 @@ runs:
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
         git config user.name "PR-summary-bot"
         git config user.email "PR-summary-bot@users.noreply.github.com"
-        printf $'Using \'%s\' as main branch.\n' "${{ inputs.MAIN_BRANCH }}"
+        BRANCH="$(gh pr view "${PR_NUMBER}" --json headRefName --jq '.headRefName')"
+        printf $'Main branch: \'%s\'.\nPR branch:   \'%s\'' "${{ inputs.MAIN_BRANCH }}" "${{ BRANCH }}"
+        git checkout "${BRANCH}"
         if git merge "origin/${{ inputs.MAIN_BRANCH }}" --no-ff --no-commit
         then
           git merge --abort || true
