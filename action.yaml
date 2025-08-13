@@ -18,17 +18,6 @@ inputs:
     required: false
     default: ''
 
-#env:
-#  GH_TOKEN: ${{ github.token }}
-#  rootDir: "Advents"    # make this an input
-
-
-#permissions:
-#  issues: write
-#  contents: read
-#  pull-requests: write  # Only allow PR comments/labels
-#  # All other permissions are implicitly 'none'
-
 runs:
   using: "composite"
   steps:
