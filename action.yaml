@@ -358,7 +358,7 @@ runs:
         printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
-        ### Tech debt ###
+        ### Custom report ###
         if [ -z  "${{ inputs.TECH_DEBT_SUMMARY }}" ]
         then
           printf $'No custom script provided.\n'
@@ -372,11 +372,6 @@ runs:
             printf $'Custom script produced no output.\n'
           fi
         fi
-
-        #techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
-
-        #printf $'Add the technical debts to the summary file\n'
-        #printf '\n\n---\n\n%s' "${techDebtVar}" >> "${summaryFile}"
 
         ### Renames ###
         if [ -n "${{ steps.renames.outputs.report }}" ]
