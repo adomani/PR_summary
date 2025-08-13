@@ -354,40 +354,52 @@ runs:
         printf $'Create the summary header\n'
         printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
 
+        appendIf () {
+        if [ -n "${1}" ]
+        then
+          printf '%s\n' "${1}" |
+          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+        fi
+        }
+
         ### Imports ###
         printf $'Add import report to the summary file\n'
-        printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
-          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+        appendIf "${{ steps.import_diff.outputs.report }}"
+        #printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
+        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Declarations ###
         printf $'Add the declarations diff to the summary file\n'
-        printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
-          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+        appendIf "${{ steps.decls_diff.outputs.report }}"
+        #printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
+        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Custom report ###
         if [ -z  "${{ inputs.CUSTOM_REPORT_SCRIPT }}" ]
         then
           printf $'No custom script provided.\n'
         else
-          if [ -n  "${{ steps.custom.outputs.report }}" ]
-          then
-            echo "Compute custom report"
-            printf '%s\n' "${{ steps.custom.outputs.report }}" |
-              sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-          else
-            printf $'Custom script produced no output.\n'
-          fi
+          appendIf "${{ steps.custom.outputs.report }}"
+          #if [ -n  "${{ steps.custom.outputs.report }}" ]
+          #then
+          #  echo "Compute custom report"
+          #  printf '%s\n' "${{ steps.custom.outputs.report }}" |
+          #    sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+          #else
+          #  printf $'Custom script produced no output.\n'
+          #fi
         fi
 
         ### Renames ###
-        if [ -n "${{ steps.renames.outputs.report }}" ]
-        then
-          printf $'Add the renamed files to the summary file.\n'
-          printf '%s\n' "${{ steps.renames.outputs.report }}" |
-          sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-        else
-          printf $'No renamed files to report.\n'
-        fi
+        appendIf "${{ steps.renames.outputs.report }}"
+        #if [ -n "${{ steps.renames.outputs.report }}" ]
+        #then
+        #  printf $'Add the renamed files to the summary file.\n'
+        #  printf '%s\n' "${{ steps.renames.outputs.report }}" |
+        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+        #else
+        #  printf $'No renamed files to report.\n'
+        #fi
 
         cat "${summaryFile}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
