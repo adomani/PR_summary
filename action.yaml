@@ -361,8 +361,9 @@ runs:
         cat "${summaryFile}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
 
-        echo ".src/technical-debt-metrics.sh"
-        ./.src/technical-debt-metrics.sh pr_summary
+        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.TECH_DEBT_SUMMARY }}"
+        echo "Sourcing ${{ inputs.TECH_DEBT_SUMMARY }}"
+        ./"${{ inputs.TECH_DEBT_SUMMARY }}" pr_summary
 
     - name: Update the file-removed label
       env:
