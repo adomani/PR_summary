@@ -379,6 +379,7 @@ runs:
         then
           printf $'No custom script provided.\n'
         else
+          echo "Compute custom report"
           appendIf "${{ steps.custom.outputs.report }}"
           #if [ -n  "${{ steps.custom.outputs.report }}" ]
           #then
