@@ -21,7 +21,7 @@ inputs:
     description: 'Set to false if the summary should not include import changes. The default value is true.'
     required: false
     default: true
-  DECLARATION_SUMMARY:
+  DECLARATION_DIFF:
     description: 'Set to false if the summary should not include the declarations diff. The default value is true.'
     required: false
     default: true
@@ -261,8 +261,7 @@ runs:
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
-      #env:
-      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      if: inputs.DECLARATION_DIFF == 'true'
       id: decls_diff
       shell: bash
       run: |
