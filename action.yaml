@@ -368,9 +368,9 @@ runs:
 
         ### Imports ###
         printf $'Add import report to the summary file\n'
-        var="${{ steps.import_diff.outputs.report }}"
-        printf $'%s\n' "${{ steps.import_diff.outputs.report }}"
-        appendIf "${var}" #| tee -a "${summaryFile}"
+        #var="${{ steps.import_diff.outputs.report }}"
+        #printf $'%s\n' "${{ steps.import_diff.outputs.report }}"
+        appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
         #printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
         #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
