@@ -306,6 +306,23 @@ runs:
             tee -a "${GITHUB_OUTPUT}"
         fi
 
+    - name: Custom report
+      #env:
+      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      id: custom
+      shell: bash
+      run: |
+        # Custom report
+        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.TECH_DEBT_SUMMARY }}"
+        echo "Sourcing ${{ inputs.TECH_DEBT_SUMMARY }}"
+        report="$(./"${{ inputs.TECH_DEBT_SUMMARY }}" pr_summary)"
+        if [ -n "${report}" ]
+        then
+          printf $'report<<CUSTOM_REPORT_SCRIPT\n\n\n---\n\n%s\nCUSTOM_REPORT_SCRIPT\n' "${report}" |
+            sed 's=`=${{ steps.globals.outputs.separator }}=g' |
+            tee -a "${GITHUB_OUTPUT}"
+        fi
+
     - name: Post or update the summary comment
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
@@ -342,11 +359,22 @@ runs:
           sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
 
         ### Tech debt ###
-        echo "Compute technical debt changes"
-        techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
+        if [ -z  "${{ inputs.TECH_DEBT_SUMMARY }}" ]
+        then
+          printf $'No custom script provided.\n'
+        else if [ -n  "${{ steps.custom.outputs.report }}" ]
+        then
+          echo "Compute custom report"
+          printf '%s\n' "${{ steps.custom.outputs.report }}" |
+            sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+        else
+          printf $'Custom script produced no output.\n'
+        fi
 
-        printf $'Add the technical debts to the summary file\n'
-        printf '\n\n---\n\n%s' "${techDebtVar}" >> "${summaryFile}"
+        #techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
+
+        #printf $'Add the technical debts to the summary file\n'
+        #printf '\n\n---\n\n%s' "${techDebtVar}" >> "${summaryFile}"
 
         ### Renames ###
         if [ -n "${{ steps.renames.outputs.report }}" ]
@@ -360,10 +388,6 @@ runs:
 
         cat "${summaryFile}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
-
-        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.TECH_DEBT_SUMMARY }}"
-        echo "Sourcing ${{ inputs.TECH_DEBT_SUMMARY }}"
-        ./"${{ inputs.TECH_DEBT_SUMMARY }}" pr_summary
 
     - name: Update the file-removed label
       env:
