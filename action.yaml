@@ -190,13 +190,13 @@ runs:
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
-        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > base.json
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee base.json
 
         printf $'Checkout the \'%s\' branch\n' "${{ github.head_ref }}"
         git checkout "${{ github.head_ref }}"
 
         echo "Compute the counts for the HEAD of the PR"
-        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" > head.json
+        python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
