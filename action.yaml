@@ -362,13 +362,15 @@ runs:
         if [ -z  "${{ inputs.TECH_DEBT_SUMMARY }}" ]
         then
           printf $'No custom script provided.\n'
-        else if [ -n  "${{ steps.custom.outputs.report }}" ]
-        then
-          echo "Compute custom report"
-          printf '%s\n' "${{ steps.custom.outputs.report }}" |
-            sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
         else
-          printf $'Custom script produced no output.\n'
+          if [ -n  "${{ steps.custom.outputs.report }}" ]
+          then
+            echo "Compute custom report"
+            printf '%s\n' "${{ steps.custom.outputs.report }}" |
+              sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
+          else
+            printf $'Custom script produced no output.\n'
+          fi
         fi
 
         #techDebtVar="$("${GITHUB_ACTION_PATH}/scripts/technical-debt-metrics.sh" pr_summary)"
