@@ -303,6 +303,7 @@ runs:
         then
           printf $'report<<RENAMED_FILES_REPORT\n%s\nRENAMED_FILES_REPORT\n' |
             tee -a "${GITHUB_OUTPUT}"
+        fi
 
     - name: Post or update the summary comment
       env:
