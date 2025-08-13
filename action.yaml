@@ -214,8 +214,8 @@ runs:
         git checkout "${currentHash}" --
 
     - name: Post or update the summary comment
-      #env:
-      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
       #  BRANCH_NAME: ${{ github.head_ref }}
       shell: bash
       run: |
