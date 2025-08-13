@@ -44,7 +44,7 @@ runs:
           rootDir="${rootDir^}"
         fi
         printf $'Import diffs take into account the following directory:\n'
-        echo "rootDir=${rootDir} | tee -a "${GITHUB_OUTPUT}"
+        echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
     ## Runs the `date` command in bash and outputs the date/time.
     #- name: Run command
