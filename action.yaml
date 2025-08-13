@@ -301,7 +301,7 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          printf $'report<<RENAMED_FILES_REPORT\n%s\nRENAMED_FILES_REPORT\n' |
+          printf $'report<<RENAMED_FILES_REPORT\n%s\nRENAMED_FILES_REPORT\n' "${report}" |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
