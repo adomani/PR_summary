@@ -17,6 +17,22 @@ inputs:
     description: 'The name of the main directory used for import changes. The default is the name of the repository, with the first letter capitalized.'
     required: false
     default: ''
+  IMPORT_DIFF:
+    description: 'Set to false if the summary should not include import changes. The default value is true.'
+    required: false
+    default: true
+  DECLARATION_SUMMARY:
+    description: 'Set to false if the summary should not include the declarations diff. The default value is true.'
+    required: false
+    default: true
+  TECH_DEBT_SUMMARY:
+    description: 'Set to false if the summary should not include the technical debt diff. The default value is true.'
+    required: false
+    default: true
+  REMOVED_FILE_SUMMARY:
+    description: 'Set to false if the summary should not include removed files reports. The default value is true.'
+    required: false
+    default: true
 
 runs:
   using: "composite"
