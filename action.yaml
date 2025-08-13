@@ -23,11 +23,11 @@ inputs:
 #  rootDir: "Advents"    # make this an input
 
 
-permissions:
-  issues: write
-  contents: read
-  pull-requests: write  # Only allow PR comments/labels
-  # All other permissions are implicitly 'none'
+#permissions:
+#  issues: write
+#  contents: read
+#  pull-requests: write  # Only allow PR comments/labels
+#  # All other permissions are implicitly 'none'
 
 runs:
   using: "composite"
@@ -219,7 +219,6 @@ runs:
     - name: Post or update the summary comment
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
-      #  BRANCH_NAME: ${{ github.head_ref }}
       shell: bash
       run: |
         # Post or update the summary comment
