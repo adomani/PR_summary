@@ -278,6 +278,32 @@ runs:
           sed 's=`=${{ steps.globals.outputs.separator }}=g' |
           tee -a "${GITHUB_OUTPUT}"
 
+    - name: Renames
+      #env:
+      #  GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
+      id: renames
+      shell: bash
+      run: |
+        # Renames
+        echo "Include any errors about removed or renamed files without deprecation,"
+        echo "as well as errors about extraneous deprecated_module additions."
+        report="$(
+            if [ -s moved_without_deprecation.txt ]
+            then
+              printf '\n\n---\n\n'
+              cat moved_without_deprecation.txt
+            fi
+            if [ -s extraneous_deprecated_module.txt ]
+            then
+              printf '\n\n---\n\n'
+              cat extraneous_deprecated_module.txt
+            fi
+          )"
+        if [ -n "${report}" ]
+        then
+          printf $'report<<RENAMED_FILES_REPORT\n%s\nRENAMED_FILES_REPORT\n' |
+            tee -a "${GITHUB_OUTPUT}"
+
     - name: Post or update the summary comment
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }} # used by gh to edit labels
@@ -321,19 +347,25 @@ runs:
         printf '\n\n---\n\n%s' "${techDebtVar}" >> "${summaryFile}"
 
         ### Renames ###
-        echo "Include any errors about removed or renamed files without deprecation,"
-        echo "as well as errors about extraneous deprecated_module additions."
-        if [ -s moved_without_deprecation.txt ]
+        #echo "Include any errors about removed or renamed files without deprecation,"
+        #echo "as well as errors about extraneous deprecated_module additions."
+        #if [ -s moved_without_deprecation.txt ]
+        #then
+        #  printf '\n\n---\n\n' >> "${summaryFile}"
+        #  cat moved_without_deprecation.txt >> "${summaryFile}"
+        #fi
+        #if [ -s extraneous_deprecated_module.txt ]
+        #then
+        #  printf '\n\n---\n\n' >> "${summaryFile}"
+        #  cat extraneous_deprecated_module.txt >> "${summaryFile}"
+        #fi
+        if [ -n "${{ steps.renames.outputs.report }}" ]
         then
-          printf '\n\n---\n\n' >> "${summaryFile}"
-          cat moved_without_deprecation.txt >> "${summaryFile}"
+          printf $'Add the renamed files to the summary file.\n'
+          printf '%s\n' "${{ steps.renames.outputs.report }}" >> "${summaryFile}"
+        else
+          printf $'No renamed files to report.\n'
         fi
-        if [ -s extraneous_deprecated_module.txt ]
-        then
-          printf '\n\n---\n\n' >> "${summaryFile}"
-          cat extraneous_deprecated_module.txt >> "${summaryFile}"
-        fi
-        echo "" >> "${summaryFile}"
 
         cat "${summaryFile}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
