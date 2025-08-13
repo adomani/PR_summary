@@ -61,6 +61,9 @@ runs:
         printf $'Import diffs take into account the following directory:\n'
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
+        # Set the custom separator to escape backticks
+        printf $'separator=%s\n' "###0###" | tee -a "${GITHUB_OUTPUT}"
+
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
@@ -216,15 +219,12 @@ runs:
       run: |
         # Import report
 
-        SEPARATOR="###0###"
-        printf $'separator=%s\n' "${SEPARATOR}" | tee -a "${GITHUB_OUTPUT}"
-
-        graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt "${SEPARATOR}")
+        graphAndHighPercentReports=$(python "${GITHUB_ACTION_PATH}/scripts/import-graph-report.py" base.json head.json changed_files.txt "${{ steps.globals.outputs.rootDir }}")
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}" "${SEPARATOR}"
+          "${GITHUB_ACTION_PATH}/scripts/import_trans_difference.sh" "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"
