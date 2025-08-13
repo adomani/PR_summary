@@ -187,7 +187,7 @@ else
 fi
 
 printf $'<details>
-  <summary>You can run this locally by cloning <a href="https://github.com/adomani/PR_summary">adomani/PR_summary</a> and then using \'scripts/declarations_diff.sh\' as follows</summary>\n\n
+  <summary>You can run this locally by cloning <a href=\"https://github.com/adomani/PR_summary\">adomani/PR_summary</a> and then using \'scripts/declarations_diff.sh\' as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
 ./scripts/declarations_diff.sh
