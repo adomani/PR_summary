@@ -33,11 +33,11 @@ runs:
   using: "composite"
   steps:
 
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      shell: bash
-      run: echo "$GITHUB_CONTEXT"
+    #- name: Dump GitHub context
+    #  env:
+    #    GITHUB_CONTEXT: ${{ toJson(github) }}
+    #  shell: bash
+    #  run: echo "$GITHUB_CONTEXT"
 
     - name: Set the root dir for import diffs
       id: globals
