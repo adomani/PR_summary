@@ -94,11 +94,11 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         # we add "(new file)" next to the modules whose name appears in `newModules`
         # we separate entries with a line break, so that later we can sort the modules
         # with the same number of import differences easily
-        reds[diff[fil]]=sprintf("%s `%s`%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
+        reds[diff[fil]]=sprintf("%s ``%s``%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
     if ((all == 0) && (ghLimit/2 <= outputLength)) {
-      printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run `scripts/import_trans_difference.sh all` locally to see the whole output.", fileCount, outputLength)
+      printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run ``scripts/import_trans_difference.sh all`` locally to see the whole output.", fileCount, outputLength)
     } else {
       for(x in reds) {
         sorted=""
