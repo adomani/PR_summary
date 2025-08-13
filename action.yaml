@@ -262,7 +262,7 @@ runs:
         printf $'report<<IMP_DIFF_REP|||||||\n%s\n\n%s\n|||||||IMP_DIFF_REP|||||||' "${high_percentages}" "${importCount}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||||||=\n=' |
+                  s=|||||||=\n=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Declarations diff
@@ -286,7 +286,7 @@ runs:
         printf $'report<<DECL_DIFF_REPORT|||||||%s|||||||DECL_DIFF_REPORT|||||||' "${declDiff}" |
           sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                   s=\n=777=g
-                  s=|||||||=\n=' |
+                  s=|||||||=\n=g' |
           tee -a "${GITHUB_OUTPUT}"
 
     - name: Renames
@@ -317,7 +317,7 @@ runs:
           printf $'report<<RENAMED_FILES_REPORT|||||||\n%s\n|||||||RENAMED_FILES_REPORT|||||||' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||||||=\n=' |
+                    s=|||||||=\n=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
@@ -336,7 +336,7 @@ runs:
           printf $'report<<CUSTOM_REPORT_SCRIPT|||||||\n%s\n|||||||CUSTOM_REPORT_SCRIPT|||||||' "${report}" |
             sed -z 's=`=${{ steps.globals.outputs.separator }}=g
                     s=\n=777=g
-                    s=|||||||=\n=' |
+                    s=|||||||=\n=g' |
             tee -a "${GITHUB_OUTPUT}"
         fi
 
