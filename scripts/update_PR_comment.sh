@@ -27,6 +27,8 @@ if [[ -z $PR ]]; then
   exit 1
 fi
 
+messageJson="$(mktemp -p . --suffix=.json)"
+
 baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
 printf 'Base url: %s\n' "${baseURL}"
 method="POST"
@@ -41,6 +43,6 @@ if [[ -f "$messageFile" ]]; then
         url="${baseURL}/comments/${comment_id}"
         method="PATCH"
     fi
-    jq -Rs -n -c '{"body": inputs}' "${messageFile}" > "${messageFile}.json"
-    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @"${messageFile}.json" "$url"
+    jq -Rs -n -c '{"body": inputs}' "${messageFile}" > "${messageJson}"
+    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @"${messageJson}" "$url"
 fi
