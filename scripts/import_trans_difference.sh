@@ -111,7 +111,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
   printf "|Files|Import difference|\n|-|-|\n"
   (gawk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
       # we pass the "A"dded files with respect to master, converting them to module names
-      git diff --name-only --diff-filter=A master | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
+      git diff --name-only --diff-filter=A "${mainBranch}" | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
     BEGIN{
       # `arrayNewModules` maps integers to module names
