@@ -78,7 +78,7 @@ runs:
 
         # Set the temp dir for the local files
         tempDir="$(mktemp --directory -p "${{ github.action_path }}")"
-        printf $'tempDir=%s\n' "${tempDir}" || tee -a "${GITHUB_OUTPUT}"
+        printf $'tempDir=%s\n' "${tempDir}" | tee -a "${GITHUB_OUTPUT}"
 
         # Set the name for the file containing the final comment
         summaryFile="${tempDir}/please_merge_the_main_branch.md"
