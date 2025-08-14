@@ -65,15 +65,6 @@ runs:
         printf $'Import diffs take into account the following directory:\n'
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
-        # Set the custom separator to escape backticks
-        printf $'separator=%s\n' "$(date | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
-
-        # Set the custom separator to escape line breaks
-        printf $'LB=%s\n' "$(date --date="yesterday" | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
-
-        # Set the custom EOF marker
-        printf $'EOF=%s\n' "$(date --date="tomorrow" | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
-
         # Set the name for the file containing the final comment
         con=0
         summaryFile=please_merge_the_main_branch
