@@ -78,7 +78,7 @@ runs:
 
         # Set the name for the file containing the final comment
         con=0
-        summaryFile="${GITHUB_ACTION_PATH}/please_merge_the_main_branch"
+        summaryFile="${{ github.action_path }}/please_merge_the_main_branch"
         while [ -f "${summaryFile}${con}.md" ]; do
           con++
         done
