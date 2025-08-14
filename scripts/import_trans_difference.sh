@@ -114,7 +114,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       git diff --name-only --diff-filter=A "${mainBranch}" | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
     BEGIN{
-      printf("newfiles:\n%s\n------", newFiles)
+      printf("newfiles:\n%s\n** ------ **", newFiles)
       # `arrayNewModules` maps integers to module names
       split(newFiles, arrayNewModules, ",")
       # `newModules` "just" stores the module names
