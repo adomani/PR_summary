@@ -210,7 +210,7 @@ runs:
             printf '\nnote: file %s without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
-        done < "${tempDir}/renamed_files.txt"
+        done < "${tempDir}/renamed_files"
 
     - name: Compute transitive imports
       if: inputs.IMPORT_DIFF == 'true'
