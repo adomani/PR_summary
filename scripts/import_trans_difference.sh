@@ -6,7 +6,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
  : <<'BASH_MODULE_DOCS'
-`scripts/import_trans_difference.sh (-b mainBranch)? (-a)? (-x commit1)? (-y commit2)? rootDir`
+`scripts/import_trans_difference.sh (-b mainBranch)? (-a)? (-x commit1)? (-y commit2)? (-p pathToPythonScript)? rootDir`
 outputs a full diff of the change of transitive imports in all the files between
 `commit1` and `commit2`, using `mainBranch` for the "reference" branch and looking at imports of
 files contained in `rootDir`.
@@ -15,6 +15,10 @@ files contained in `rootDir`.
 
 If the commits are not provided, then the script uses the current commit as `commit1` and
 the merge-base with `mainBranch` as `commit2`.
+
+Internally, the script calls a companion python script: the `-p` flag can pass this explicitly.
+Otherwise, the `import_trans_difference` script assumes that the python script is
+the file count-trans-deps.py in the same dir as this file
 
 Without the optional flag `a`, the script only displays the difference
 if the output does not exceed 200 lines.
