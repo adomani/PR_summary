@@ -34,7 +34,7 @@ mainBranch='master'
 all='false'
 commit1="$(git rev-parse HEAD)"
 commit2=''
-sourceDir='.'
+pythonCompanion="$(dirname $0)/count-trans-deps.py"
 
 print_usage() {
   printf $'\nUsage: \'%s\' admits the following flags:
@@ -43,7 +43,7 @@ print_usage() {
 
 -b string\n   specifies the branch with respect to which the script computes the diff; the default is master
 
--s string\n   specifies the branch with respect to which the script computes the diff; the default is master
+-p path\n   specifies the companion python script that counts transitive dependencies; the default is the file count-trans-deps.py in the same dir as this file
 
 -x string\n   an optional main commit; the default is the current one
 
@@ -57,7 +57,7 @@ while getopts 'ab:s:x:y:h' flag; do
   case "${flag}" in
     a) all='true' ;;
     b) mainBranch="${OPTARG}" ;;
-    s) sourceDir="${OPTARG}" ;;
+    s) pythonCompanion="${OPTARG}" ;;
     x) commit1="${OPTARG}" ;;
     y) commit2="${OPTARG}" ;;
     *) print_usage
@@ -93,10 +93,10 @@ then
   currCommit="$(git rev-parse HEAD)"
 fi
 
->&2 printf $'Using internally the local path: \'%s\'.\n' "${sourceDir}"
+>&2 printf $'Assuming that the companions script is \'%s\'.\n' "${pythonCompanion}"
 
 getTransImports () {
-  python3 "${sourceDir}/scripts/count-trans-deps.py" "${rootDir}" |
+  python3 "${pythonCompanion}" "${rootDir}" |
     # produce lines of the form `RootDir.ModelTheory.Algebra.Ring.Basic,-582`
     sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
