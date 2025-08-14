@@ -260,7 +260,7 @@ runs:
 
         git checkout "${{ github.head_ref }}"
         tempDir="${{ steps.globals.outputs.tempDir }}"
-        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" "${{ steps.globals.outputs.tempDir }}/base.json" "${{ steps.globals.outputs.tempDir }}/head.json" "${tempDir}/changed_files.txt")
+        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" "${tempDir}/base.json" "${tempDir}/head.json" "${tempDir}/changed_files.txt")
 
         echo "Produce import count comment"
         importCount=$(
