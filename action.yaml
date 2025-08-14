@@ -448,8 +448,8 @@ runs:
         #fi
         COMMENTED_OUT
 
-        cat "${summaryFile}"
-        "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
+        cat "${{ steps.globals.outputs.summaryFile }}"
+        "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${{ steps.globals.outputs.summaryFile }}" "${title}" "${PR}"
 
     - name: Update the file-removed label
       if: inputs.REMOVED_FILE_DIFF == 'true'
