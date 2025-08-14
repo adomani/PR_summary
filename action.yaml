@@ -54,10 +54,11 @@ runs:
         find /home/runner/ -name 'count-trans-deps.py'
         path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
         printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
+        temp=hello
 
       shell: bash
       env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
+        GITHUB_ACTION_PATH: ${temp}
 
     - name: Set the root dir for import diffs
       id: globals
@@ -87,6 +88,7 @@ runs:
 
         which mktemp
         which tempfile
+        echo "${GITHUB_ACTION_PATH}"
 
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
