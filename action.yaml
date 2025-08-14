@@ -77,11 +77,9 @@ runs:
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
         # Set the name for the file containing the final comment
-        con=0
-        summaryFile="${{ github.action_path }}/please_merge_the_main_branch"
-        while [ -f "${summaryFile}${con}.md" ]; do
-          con++
-        done
+        tempDir="$(mktemp -p "${{ github.action_path }}")"
+        printf $'tempDir=%s\n' "${tempDir}" || tee -a "${GITHUB_OUTPUT}"
+        summaryFile="${tempDir}/please_merge_the_main_branch"
         printf $'summaryFile=%s\n' "${summaryFile}${con}.md" |
           tee -a "${GITHUB_OUTPUT}"
 
