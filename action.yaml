@@ -79,8 +79,8 @@ runs:
         # Set the name for the file containing the final comment
         tempDir="$(mktemp -p "${{ github.action_path }}")"
         printf $'tempDir=%s\n' "${tempDir}" || tee -a "${GITHUB_OUTPUT}"
-        summaryFile="${tempDir}/please_merge_the_main_branch"
-        printf $'summaryFile=%s\n' "${summaryFile}${con}.md" |
+        summaryFile="${tempDir}/please_merge_the_main_branch.md"
+        printf $'summaryFile=%s\n' "${summaryFile}" |
           tee -a "${GITHUB_OUTPUT}"
 
         which mktemp
@@ -240,7 +240,7 @@ runs:
         ### Header ###
         printf $'Create the summary header\n'
         printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" |
-          tee -a "${{ steps.globals.outputs.summaryFile}}"
+          tee -a "${{ steps.globals.outputs.summaryFile }}"
 
 
     - name: Import report
