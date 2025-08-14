@@ -48,17 +48,16 @@ runs:
     #  shell: bash
     #  run: echo "$GITHUB_CONTEXT"
 
-    - name: Set GitHub Path
-      run: |
-        printf $'Looking for the \'count-trans-deps.py\' script file, in case there are issues with the path:\n'
-        find /home/runner/ -name 'count-trans-deps.py'
-        path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
-        printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
-        temp=hello
-
-      shell: bash
-      env:
-        myTemp: ${temp}
+    #- name: Set GitHub Path
+    #  run: |
+    #    printf $'Looking for the \'count-trans-deps.py\' script file, in case there are issues with the path:\n'
+    #    find /home/runner/ -name 'count-trans-deps.py'
+    #    path=home/runner/work/_actions/adomani/PR_summary/dev/scripts
+    #    printf $'correct path: %s\nfound path:  %s\n' "${path}" "${GITHUB_ACTION_PATH}"
+    #    temp=hello
+    #  shell: bash
+    #  env:
+    #    myTemp: ${temp}
 
     - name: Set the root dir for import diffs
       id: globals
@@ -87,8 +86,6 @@ runs:
           tee -a "${GITHUB_OUTPUT}"
 
         which mktemp
-        which tempfile
-        echo "myTemp: ${myTemp}"
 
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
