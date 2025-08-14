@@ -34,7 +34,7 @@ mainBranch='master'
 all='false'
 commit1="$(git rev-parse HEAD)"
 commit2=''
-inputCommit=''
+sourceDir='.'
 
 print_usage() {
   printf $'\nUsage: \'%s\' admits the following flags:
@@ -51,13 +51,13 @@ print_usage() {
 ' "${0}"
 }
 
-while getopts 'ab:x:y:h' flag; do
+while getopts 'ab:s:x:y:h' flag; do
   case "${flag}" in
     a) all='true' ;;
     b) mainBranch="${OPTARG}" ;;
     x) commit1="${OPTARG}" ;;
     y) commit2="${OPTARG}" ;;
-    i) inputCommit="${OPTARG}" ;;
+    i) sourceDir="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -88,10 +88,10 @@ then
   currCommit="$(git rev-parse HEAD)"
 fi
 
->&2 printf $'Using internally the local path: \'%s\'.\n' "${GITHUB_ACTION_PATH}"
+>&2 printf $'Using internally the local path: \'%s\'.\n' "${sourceDir}"
 
 getTransImports () {
-  python3 "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${rootDir}" |
+  python3 "${sourceDir}/scripts/count-trans-deps.py" "${rootDir}" |
     # produce lines of the form `RootDir.ModelTheory.Algebra.Ring.Basic,-582`
     sed 's=\([0-9]*\)[},]=,'"${1:-}"'\1\n=g' |
     tr -d ' "{}:'
