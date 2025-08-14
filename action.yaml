@@ -222,13 +222,13 @@ runs:
         git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
-        python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee base.json
+        python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee "${{ steps.globals.outputs.tempDir }}/base.json"
 
         printf $'Checkout the \'%s\' branch\n' "${{ github.head_ref }}"
         git checkout "${{ github.head_ref }}"
 
         echo "Compute the counts for the HEAD of the PR"
-        python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
+        python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee "${{ steps.globals.outputs.tempDir }}/head.json"
 
     - name: Report header
       shell: bash
@@ -260,12 +260,12 @@ runs:
 
         git checkout "${{ github.head_ref }}"
         tempDir="${{ steps.globals.outputs.tempDir }}"
-        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" base.json head.json "${tempDir}/changed_files.txt")
+        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" "${{ steps.globals.outputs.tempDir }}/base.json" "${{ steps.globals.outputs.tempDir }}/head.json" "${tempDir}/changed_files.txt")
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}"
+          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ inputs.MAIN_BRANCH }}" -s "${{ github.action_path }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"
