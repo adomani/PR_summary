@@ -64,15 +64,15 @@ while getopts 'ab:x:y:h' flag; do
 done
 
 # `all=1` is the flag to print all import changes, without cut-off
-all=0
-if [ "${1:-}" == "all" ]
-then
-  all=1
-  shift
-fi
+#all=0
+#if [ "${1:-}" == "all" ]
+#then
+#  all=1
+#  shift
+#fi
 
 #mainBranch="${1:-}"
-rootDir="${2:-}"
+rootDir="${1:-}"
 
 #commit1="${3:-"$(git rev-parse HEAD)"}"
 
@@ -132,7 +132,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         reds[diff[fil]]=sprintf("%s `%s`%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
-    if ((all == 0) && (ghLimit/2 <= outputLength)) {
+    if ((all == "false") && (ghLimit/2 <= outputLength)) {
       printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run this locally by cloning <a href=\"https://github.com/adomani/PR_summary\">adomani/PR_summary</a> and then using `scripts/import_trans_difference.sh all` locally to see the whole output.", fileCount, outputLength)
     } else {
       for(x in reds) {
