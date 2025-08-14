@@ -106,14 +106,16 @@ getTransImports () {
     tr -d ' "{}:'
 }
 
+tmpDir="$(mktemp --directory)"
+
 >&2 git checkout "${commit1}"
 #git checkout "${mainBranch}" scripts/count-trans-deps.py
-getTransImports > transImports1.txt
+getTransImports > "${tmpDir}/transImports1.txt"
 >&2 git checkout "${currCommit}"
 
 >&2 git checkout "${commit2}"
 #git checkout "${mainBranch}" scripts/count-trans-deps.py
-getTransImports - > transImports2.txt
+getTransImports - > "${tmpDir}/transImports2.txt"
 >&2 git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
@@ -153,5 +155,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], sorted, x) }
       }
     }
-  }' transImports*.txt | sort -t'|' -n -k3
+  }' "${tmpDir}/transImports*.txt" | sort -t'|' -n -k3
   ))"
+
+rm -rf "${tmpDir}"
