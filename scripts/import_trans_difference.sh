@@ -97,7 +97,7 @@ then
   currCommit="$(git rev-parse HEAD)"
 fi
 
->&2 printf $'Assuming that the companions script is \'%s\'.\n' "${pythonCompanion}"
+>&2 printf $'Assuming that the companions script is \'%s\'.\nThe command is %s\n' "${pythonCompanion}" "${0}"
 
 getTransImports () {
   python3 "${pythonCompanion}" "${rootDir}" |
