@@ -78,7 +78,6 @@ shift $((OPTIND - 1))
 
 #mainBranch="${1:-}"
 rootDir="${1:-}"
-printf $'*** *** *** rootDir: %s *** *** ***\n' "${rootDir}"
 
 #commit1="${3:-"$(git rev-parse HEAD)"}"
 
@@ -120,7 +119,6 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
       git diff --name-only --diff-filter=A "${mainBranch}" | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
     BEGIN{
-      printf("newfiles:\n%s\n** ------ **\n", newFiles)
       # `arrayNewModules` maps integers to module names
       split(newFiles, arrayNewModules, ",")
       # `newModules` "just" stores the module names
