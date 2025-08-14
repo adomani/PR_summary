@@ -383,7 +383,7 @@ runs:
         # Update the file-removed label
 
         git checkout "${{ github.head_ref }}"
-        undeprecatedMoves="$(cat moved_without_deprecation.txt)"
+        undeprecatedMoves="$(cat "${{ steps.globals.outputs.tempDir }}/moved_without_deprecation.txt")"
         if [ -n "$undeprecatedMoves" ]; then
           printf $'This PR has undeprecated module (re)movals.\nAdding the \'file-removed\' label.\n'
           gh pr edit "${PR}" --add-label file-removed
