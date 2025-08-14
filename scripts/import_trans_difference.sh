@@ -73,6 +73,9 @@ done
 #  shift
 #fi
 
+# Shift away the processed options
+shift $((OPTIND - 1))
+
 #mainBranch="${1:-}"
 rootDir="${1:-}"
 printf $'*** *** *** rootDir: %s *** *** ***\n' "${rootDir}"
