@@ -139,9 +139,10 @@ runs:
           printf $'%s %s.\n' "${number}" "${type}"
         }
         # Get the list of all changed files.
-        echo "Saving the changed files to 'changed_files.txt'..."
-        git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > changed_files.txt
-        tallyFile changed_files.txt
+        changed_files="${{ steps.globals.outputs.tempDir }}/changed_files.txt"
+        echo "Saving the changed files to '${changed_files}'..."
+        git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > "${changed_files}"
+        tallyFile "${changed_files}"
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
@@ -251,8 +252,8 @@ runs:
       shell: bash
       run: |
         # Import report
-
-        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" base.json head.json changed_files.txt)
+        tempDir="${{ steps.globals.outputs.tempDir }}
+        graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" base.json head.json "${tempDir}/changed_files.txt")
 
         echo "Produce import count comment"
         importCount=$(
