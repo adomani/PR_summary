@@ -141,6 +141,8 @@ runs:
           printf $'%s %s.\n' "${number}" "${type}"
         }
         # Get the list of all changed files.
+        echo "steps.globals.outputs.tempDir: ${{ steps.globals.outputs.tempDir }}"
+        echo "steps.globals.outputs: ${{ steps.globals.outputs }}"
         changed_files=${{ steps.globals.outputs.tempDir }}/changed_files.txt
         echo "Saving the changed files to '${changed_files}'..."
         git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > "${changed_files}"
