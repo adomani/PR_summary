@@ -173,8 +173,8 @@ runs:
                 for(old in oldNew) {
                   printf("`%s` was renamed to `%s`\n", old, oldNew[old])
                 }
-              }' > renamed_files.txt
-        tallyFile renamed_files.txt
+              }' > "${{ steps.globals.outputs.tempDir }}/renamed_files.txt"
+        tallyFile "${{ steps.globals.outputs.tempDir }}/renamed_files.txt"
 
     - name: Compute (re)moved files without deprecation
       if: inputs.REMOVED_FILE_DIFF == 'true'
