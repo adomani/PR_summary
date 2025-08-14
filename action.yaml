@@ -76,9 +76,11 @@ runs:
         printf $'Import diffs take into account the following directory:\n'
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
-        # Set the name for the file containing the final comment
+        # Set the temp dir for the local files
         tempDir="$(mktemp --directory -p "${{ github.action_path }}")"
         printf $'tempDir=%s\n' "${tempDir}" || tee -a "${GITHUB_OUTPUT}"
+
+        # Set the name for the file containing the final comment
         summaryFile="${tempDir}/please_merge_the_main_branch.md"
         printf $'summaryFile=%s\n' "${summaryFile}" |
           tee -a "${GITHUB_OUTPUT}"
@@ -139,7 +141,7 @@ runs:
           printf $'%s %s.\n' "${number}" "${type}"
         }
         # Get the list of all changed files.
-        changed_files="${{ steps.globals.outputs.tempDir }}/changed_files.txt"
+        changed_files=${{ steps.globals.outputs.tempDir }}/changed_files.txt
         echo "Saving the changed files to '${changed_files}'..."
         git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > "${changed_files}"
         tallyFile "${changed_files}"
