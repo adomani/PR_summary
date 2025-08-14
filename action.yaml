@@ -243,7 +243,6 @@ runs:
         printf 'hashURL: %s\n' "${hashURL}"
 
         shortHash="$(git rev-parse --short HEAD)"
-        PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
         ### Header ###
@@ -293,8 +292,6 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        #format encode "$(printf $'%s\n\n%s' "${high_percentages}" "${importCount}" |
-        #  tee -a "${GITHUB_OUTPUT}"
         printf $'\n\n---\n\n%s\n\n%s' "${high_percentages}" "${importCount}" |
           tee -a "${{ steps.globals.outputs.summaryFile }}"
 
@@ -316,8 +313,6 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        #format encode "$(printf $'%s' "${declDiff}" |
-        #  tee -a "${GITHUB_OUTPUT}"
         printf $'\n\n---\n\n%s' "${declDiff}" |
           tee -a "${{ steps.globals.outputs.summaryFile }}"
 
@@ -346,8 +341,6 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          #format encode "$(printf $'%s' "${report}" |
-          #  tee -a "${GITHUB_OUTPUT}"
           printf $'\n\n---\n\n%s' "${report}" |
             tee -a "${{ steps.globals.outputs.summaryFile }}"
         fi
@@ -364,8 +357,6 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          #format encode "$(printf $'%s' "${report}" |
-          #  tee -a "${GITHUB_OUTPUT}"
           printf $'\n\n---\n\n%s' "${report}" |
             tee -a "${{ steps.globals.outputs.summaryFile }}"
         fi
@@ -377,76 +368,21 @@ runs:
       run: |
         # Post or update the summary comment
 
-        summaryFile=please_merge_the_main_branch.md
         #appendSummary () {
         #  printf $'%s\n---\n' "${1}" >> "${summaryFile}"
         #}
         git checkout "${{ github.head_ref }}"
 
-        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
-        printf 'hashURL: %s\n' "${hashURL}"
-
-        shortHash="$(git rev-parse --short HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
-        #appendSummary "${title}"
 
-        #### Header ###
-        #printf $'Create the summary header\n'
-        #sed -i '1s/^/task goes here\n/' todo.txt
-        #printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
-
-        appendIf () {
-        if [ -n "${1}" ]
-        then
-          >&2 printf $'Appending \'%s[...]\' to %s\n' "$(printf '%s' "${1:0:50}" | sed -z 's=\n=⏎=g')" "${summaryFile}"
-          printf $'\n\n---\n\n%s\n' "$(format decode "${1}")" >> "${summaryFile}"
-        fi
-        }
-         : <<'COMMENTED_OUT'
-        ### Imports ###
-        printf $'Add import report to the summary file\n'
-        #var="${{ steps.import_diff.outputs.report }}"
-        #printf $'%s\n' "${{ steps.import_diff.outputs.report }}"
-        appendIf "${{ steps.import_diff.outputs.report }}" #| tee -a "${summaryFile}"
-        #printf '%s\n' "${{ steps.import_diff.outputs.report }}" |
-        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-
-        ### Declarations ###
-        printf $'Add the declarations diff to the summary file\n'
-        appendIf "${{ steps.decls_diff.outputs.report }}" >> "${summaryFile}"
-        printf $'Done\n'
-        #printf '%s\n' "${{ steps.decls_diff.outputs.report }}" |
-        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-
-        ### Custom report ###
-        if [ -z "${{ inputs.CUSTOM_REPORT_SCRIPT }}" ]
-        then
-          printf $'No custom script provided.\n'
-        else
-          echo "Compute custom report"
-          appendIf "${{ steps.custom.outputs.report }}" >> "${summaryFile}"
-          #if [ -n  "${{ steps.custom.outputs.report }}" ]
-          #then
-          #  echo "Compute custom report"
-          #  printf '%s\n' "${{ steps.custom.outputs.report }}" |
-          #    sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-          #else
-          #  printf $'Custom script produced no output.\n'
-          #fi
-        fi
-
-        ### Renames ###
-        appendIf "${{ steps.renames.outputs.report }}" >> "${summaryFile}"
-        #if [ -n "${{ steps.renames.outputs.report }}" ]
+        #appendIf () {
+        #if [ -n "${1}" ]
         #then
-        #  printf $'Add the renamed files to the summary file.\n'
-        #  printf '%s\n' "${{ steps.renames.outputs.report }}" |
-        #  sed 's=${{ steps.globals.outputs.separator }}=`=g' >> "${summaryFile}"
-        #else
-        #  printf $'No renamed files to report.\n'
+        #  >&2 printf $'Appending \'%s[...]\' to %s\n' "$(printf '%s' "${1:0:50}" | sed -z 's=\n=⏎=g')" "${summaryFile}"
+        #  printf $'\n\n---\n\n%s\n' "$(format decode "${1}")" >> "${summaryFile}"
         #fi
-        COMMENTED_OUT
+        #}
 
         cat "${{ steps.globals.outputs.summaryFile }}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${{ steps.globals.outputs.summaryFile }}" "${title}" "${PR}"
