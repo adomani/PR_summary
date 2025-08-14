@@ -155,7 +155,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], sorted, x) }
       }
     }
-  }' "${tmpDir}/transImports*.txt" | sort -t'|' -n -k3
+  }' "${tmpDir}"/transImports*.txt | sort -t'|' -n -k3
   ))"
 
 rm -rf "${tmpDir}"
