@@ -197,7 +197,7 @@ runs:
             printf '\nnote: file `%s` was removed.\nPlease create a follow-up pull request adding a module deprecation. Thanks!\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
-        done < "${removed_files}"
+        done < "${{ steps.globals.outputs.tempDir }}/removed_files.txt"
         IFS=$'\n'
         while IFS= read -r file
         do
