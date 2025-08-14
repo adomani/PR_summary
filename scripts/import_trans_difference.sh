@@ -6,16 +6,18 @@ set -euo pipefail
 IFS=$'\n\t'
 
  : <<'BASH_MODULE_DOCS'
-`scripts/import_trans_difference.sh mainBranch rootDir <opt all> <opt_commit1> <opt_commit2>`
+`scripts/import_trans_difference.sh (-b mainBranch)? (-a)? (-x commit1)? (-y commit2)? rootDir`
 outputs a full diff of the change of transitive imports in all the files between
-`<opt_commit1>` and `<opt_commit2>`,
-using `mainBranch` for the "reference" branch and looking at imports of files contained in `rootDir`.
+`commit1` and `commit2`, using `mainBranch` for the "reference" branch and looking at imports of
+files contained in `rootDir`.
 
-The optional flag `<opt all>` must either be `all` or not be passed.
-Without `all`, the script only displays the difference if the output does not exceed 200 lines.
+`mainBranch` defaults to `master` if not set.
 
 If the commits are not provided, then the script uses the current commit as `commit1` and
-current `mainBranch` as `commit2`.
+the merge-base with `mainBranch` as `commit2`.
+
+Without the optional flag `a`, the script only displays the difference
+if the output does not exceed 200 lines.
 
 The output is of the form
 
@@ -28,6 +30,39 @@ The output is of the form
 with collapsible tabs for file entries with at least 3 files.
 BASH_MODULE_DOCS
 
+mainBranch='master'
+all='false'
+commit1="$(git rev-parse HEAD)"
+commit2=''
+inputCommit=''
+
+print_usage() {
+  printf $'\nUsage: \'%s\' admits the following flags:
+
+-a\n   if set, print all the output; the default cuts the output if it would not fit in a github comment
+
+-b string\n   specifies the branch with respect to which the script computes the diff; the default is master
+
+-x string\n   an optional main commit; the default is the current one
+
+-y string\n   an optional reference commit; the default is the merge-base with mainBranch
+
+-h\n   display this help message
+' "${0}"
+}
+
+while getopts 'ab:x:y:h' flag; do
+  case "${flag}" in
+    a) all='true' ;;
+    b) mainBranch="${OPTARG}" ;;
+    x) commit1="${OPTARG}" ;;
+    y) commit2="${OPTARG}" ;;
+    i) inputCommit="${OPTARG}" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
 # `all=1` is the flag to print all import changes, without cut-off
 all=0
 if [ "${1:-}" == "all" ]
@@ -36,12 +71,12 @@ then
   shift
 fi
 
-mainBranch="${1:-}"
+#mainBranch="${1:-}"
 rootDir="${2:-}"
 
-commit1="${3:-"$(git rev-parse HEAD)"}"
+#commit1="${3:-"$(git rev-parse HEAD)"}"
 
-commit2="${4:-"$(git merge-base "${mainBranch}" ${commit1})"}"
+commit2="${commit2:-"$(git merge-base "${mainBranch}" ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
