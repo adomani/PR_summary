@@ -43,6 +43,8 @@ print_usage() {
 
 -b string\n   specifies the branch with respect to which the script computes the diff; the default is master
 
+-s string\n   specifies the branch with respect to which the script computes the diff; the default is master
+
 -x string\n   an optional main commit; the default is the current one
 
 -y string\n   an optional reference commit; the default is the merge-base with mainBranch
@@ -73,6 +75,7 @@ done
 
 #mainBranch="${1:-}"
 rootDir="${1:-}"
+printf $'*** *** *** rootDir: %s *** *** ***\n' "${rootDir}"
 
 #commit1="${3:-"$(git rev-parse HEAD)"}"
 
