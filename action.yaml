@@ -77,7 +77,7 @@ runs:
         echo "rootDir=${rootDir}" | tee -a "${GITHUB_OUTPUT}"
 
         # Set the temp dir for the local files
-        tempDir="$(mktemp --directory -p "${{ github.action_path }}")"
+        tempDir="$(mktemp --directory)"
         printf $'tempDir=%s\n' "${tempDir}" | tee -a "${GITHUB_OUTPUT}"
 
         # Set the name for the file containing the final comment
