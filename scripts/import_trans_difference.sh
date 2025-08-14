@@ -57,7 +57,7 @@ while getopts 'ab:s:x:y:h' flag; do
     b) mainBranch="${OPTARG}" ;;
     x) commit1="${OPTARG}" ;;
     y) commit2="${OPTARG}" ;;
-    i) sourceDir="${OPTARG}" ;;
+    s) sourceDir="${OPTARG}" ;;
     *) print_usage
        exit 1 ;;
   esac

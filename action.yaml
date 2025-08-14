@@ -263,7 +263,7 @@ runs:
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ inputs.MAIN_BRANCH }}" -i "${{ github.action_path }}" "${{ steps.globals.outputs.rootDir }}"
+          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ inputs.MAIN_BRANCH }}" -s "${{ github.action_path }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"
