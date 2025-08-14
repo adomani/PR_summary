@@ -257,6 +257,8 @@ runs:
       shell: bash
       run: |
         # Import report
+
+        git checkout "${{ github.head_ref }}"
         tempDir="${{ steps.globals.outputs.tempDir }}"
         graphAndHighPercentReports=$(python "${{ github.action_path }}/scripts/import-graph-report.py" base.json head.json "${tempDir}/changed_files.txt")
 
