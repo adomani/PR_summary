@@ -183,19 +183,19 @@ runs:
         # Compute (re)moved files without deprecation
 
         tempDir="${{ steps.globals.outputs.tempDir }}"
-        touch moved_without_deprecation.txt
-        touch extraneous_deprecated_module.txt
+        touch "${tempDir}/moved_without_deprecation.txt"
+        touch "${tempDir}/extraneous_deprecated_module.txt"
         git checkout ${{ github.base_ref }}
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
             # shellcheck disable=SC2016
             printf '\n⚠️ **warning**: removed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
-              tee -a extraneous_deprecated_module.txt
+              tee -a "${tempDir}/extraneous_deprecated_module.txt"
           else
             # shellcheck disable=SC2016
             printf '\nnote: file `%s` was removed.\nPlease create a follow-up pull request adding a module deprecation. Thanks!\n' "${file}" |
-              tee -a moved_without_deprecation.txt
+              tee -a "${tempDir}/moved_without_deprecation.txt"
           fi
         done < "${{ steps.globals.outputs.tempDir }}/removed_files.txt"
         IFS=$'\n'
@@ -204,11 +204,11 @@ runs:
           if grep ^deprecated_module "${file}" ; then
             # shellcheck disable=SC2016
             printf '\n⚠️ **warning**: renamed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
-              tee -a extraneous_deprecated_module.txt
+              tee -a "${tempDir}/extraneous_deprecated_module.txt"
           else
             # shellcheck disable=SC2016
             printf '\nnote: file %s without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
-              tee -a moved_without_deprecation.txt
+              tee -a "${tempDir}/moved_without_deprecation.txt"
           fi
         done < "${tempDir}/renamed_files.txt"
 
@@ -322,19 +322,21 @@ runs:
         # Renames
         echo "Include any errors about removed or renamed files without deprecation,"
         echo "as well as errors about extraneous deprecated_module additions."
+
+        tempDir="${{ steps.globals.outputs.tempDir }}"
         report="$(
-            if [ -s moved_without_deprecation.txt ]
+            if [ -s "${tempDir}/moved_without_deprecation.txt" ]
             then
               #printf '\n\n---\n\n'
-              cat moved_without_deprecation.txt
+              cat "${tempDir}/moved_without_deprecation.txt"
             fi
-            if [ -s moved_without_deprecation.txt ] && [ -s extraneous_deprecated_module.txt ]
+            if [ -s "${tempDir}/moved_without_deprecation.txt" ] && [ -s "${tempDir}/extraneous_deprecated_module.txt" ]
             then
               printf '\n\n---\n\n'
             fi
-            if [ -s extraneous_deprecated_module.txt ]
+            if [ -s "${tempDir}/extraneous_deprecated_module.txt" ]
             then
-              cat extraneous_deprecated_module.txt
+              cat "${tempDir}/extraneous_deprecated_module.txt"
             fi
           )"
         if [ -n "${report}" ]
