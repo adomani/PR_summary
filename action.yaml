@@ -368,21 +368,8 @@ runs:
       run: |
         # Post or update the summary comment
 
-        #appendSummary () {
-        #  printf $'%s\n---\n' "${1}" >> "${summaryFile}"
-        #}
-        git checkout "${{ github.head_ref }}"
-
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
-
-        #appendIf () {
-        #if [ -n "${1}" ]
-        #then
-        #  >&2 printf $'Appending \'%s[...]\' to %s\n' "$(printf '%s' "${1:0:50}" | sed -z 's=\n=⏎=g')" "${summaryFile}"
-        #  printf $'\n\n---\n\n%s\n' "$(format decode "${1}")" >> "${summaryFile}"
-        #fi
-        #}
 
         cat "${{ steps.globals.outputs.summaryFile }}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${{ steps.globals.outputs.summaryFile }}" "${title}" "${PR}"
