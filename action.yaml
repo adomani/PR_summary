@@ -74,6 +74,14 @@ runs:
         # Set the custom EOF marker
         printf $'EOF=%s\n' "$(date --date="tomorrow" | sha1sum | sed 's= .*==')" | tee -a "${GITHUB_OUTPUT}"
 
+        # Set the name for the file containing the final comment
+        con=0
+        summaryFile=please_merge_the_main_branch
+        while [ -f "${summaryFile}${con}.md" ]; do
+          con++
+        done
+        printf $'summaryFile="${summaryFile}${con}.md" | tee -a "${GITHUB_OUTPUT}"
+
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
@@ -224,6 +232,26 @@ runs:
         echo "Compute the counts for the HEAD of the PR"
         python "${GITHUB_ACTION_PATH}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee head.json
 
+    - name: Report header
+      shell: bash
+      run: |
+        # Report header
+
+        git checkout "${{ github.head_ref }}"
+
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}"
+        printf 'hashURL: %s\n' "${hashURL}"
+
+        shortHash="$(git rev-parse --short HEAD)"
+        PR="${{ github.event.pull_request.number }}"
+        title="### PR summary"
+
+        ### Header ###
+        printf $'Create the summary header\n'
+        printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" |
+          tee -a "${{ steps.globals.outputs.summaryFile}}"
+
+
     - name: Import report
       if: inputs.IMPORT_DIFF == 'true'
       env:
@@ -265,8 +293,10 @@ runs:
         fi
 
         printf $'Add import report to the summary file\n'
-        format encode "$(printf $'%s\n\n%s' "${high_percentages}" "${importCount}" |
-          tee -a "${GITHUB_OUTPUT}"
+        #format encode "$(printf $'%s\n\n%s' "${high_percentages}" "${importCount}" |
+        #  tee -a "${GITHUB_OUTPUT}"
+        printf $'\n\n---\n\n%s\n\n%s' "${high_percentages}" "${importCount}" |
+          tee -a "${{ steps.globals.outputs.summaryFile }}"
 
     - name: Declarations diff
       if: inputs.DECLARATION_DIFF == 'true'
@@ -286,8 +316,10 @@ runs:
         fi
 
         printf $'Add the declarations diff to the summary file\n'
-        format encode "$(printf $'%s' "${declDiff}" |
-          tee -a "${GITHUB_OUTPUT}"
+        #format encode "$(printf $'%s' "${declDiff}" |
+        #  tee -a "${GITHUB_OUTPUT}"
+        printf $'\n\n---\n\n%s' "${declDiff}" |
+          tee -a "${{ steps.globals.outputs.summaryFile }}"
 
     - name: Renames
       if: inputs.REMOVED_FILE_DIFF == 'true'
@@ -314,8 +346,10 @@ runs:
           )"
         if [ -n "${report}" ]
         then
-          format encode "$(printf $'%s' "${report}" |
-            tee -a "${GITHUB_OUTPUT}"
+          #format encode "$(printf $'%s' "${report}" |
+          #  tee -a "${GITHUB_OUTPUT}"
+          printf $'\n\n---\n\n%s' "${report}" |
+            tee -a "${{ steps.globals.outputs.summaryFile }}"
         fi
 
     - name: Custom report
@@ -330,8 +364,10 @@ runs:
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
         then
-          format encode "$(printf $'%s' "${report}" |
-            tee -a "${GITHUB_OUTPUT}"
+          #format encode "$(printf $'%s' "${report}" |
+          #  tee -a "${GITHUB_OUTPUT}"
+          printf $'\n\n---\n\n%s' "${report}" |
+            tee -a "${{ steps.globals.outputs.summaryFile }}"
         fi
 
     - name: Post or update the summary comment
@@ -355,9 +391,10 @@ runs:
         title="### PR summary"
         #appendSummary "${title}"
 
-        ### Header ###
-        printf $'Create the summary header\n'
-        printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
+        #### Header ###
+        #printf $'Create the summary header\n'
+        #sed -i '1s/^/task goes here\n/' todo.txt
+        #printf '%s [%s](%s)' "${title}" "${shortHash}" "${hashURL}" >> "${summaryFile}"
 
         appendIf () {
         if [ -n "${1}" ]
@@ -366,7 +403,7 @@ runs:
           printf $'\n\n---\n\n%s\n' "$(format decode "${1}")" >> "${summaryFile}"
         fi
         }
-
+         : <<'COMMENTED_OUT'
         ### Imports ###
         printf $'Add import report to the summary file\n'
         #var="${{ steps.import_diff.outputs.report }}"
@@ -409,6 +446,7 @@ runs:
         #else
         #  printf $'No renamed files to report.\n'
         #fi
+        COMMENTED_OUT
 
         cat "${summaryFile}"
         "${GITHUB_ACTION_PATH}/scripts/update_PR_comment.sh" "${summaryFile}" "${title}" "${PR}"
