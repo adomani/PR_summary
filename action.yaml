@@ -71,7 +71,7 @@ runs:
         while [ -f "${summaryFile}${con}.md" ]; do
           con++
         done
-        printf $'summaryFile=%s' "${summaryFile}${con}.md" |
+        printf $'summaryFile=%s\n' "${summaryFile}${con}.md" |
           tee -a "${GITHUB_OUTPUT}"
 
         which mktemp
