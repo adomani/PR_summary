@@ -84,7 +84,7 @@ else
   git diff --unified=0 origin/"${mainBranch}"...HEAD
 fi |
   ## purge `@[...]`, to attempt to catch declaration names
-  sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
+  sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==; s=private ==' |
   ## this sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
   ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
   sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
