@@ -46,7 +46,7 @@ BASH_DOC_MODULE
 set -euo pipefail
 IFS=$'\n\t'
 
-mainBranch='master'
+mainBranch="${1:-master}"
 long='false'
 verbose='false'
 inputCommit=''
