@@ -341,6 +341,11 @@ runs:
           )"
         if [ -n "${report}" ]
         then
+          removalCount=$(( $(wc -l < "${tempDir}/removed_files.txt") + $(wc -l < "${tempDir}/renamed_files.txt") ))
+          if [ "${removalCount}" -gt 5 ]
+          then
+            report="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>' "#### Removed/renamed files (${removalCount})" "${report}")"
+          fi
           printf $'\n\n---\n\n%s' "${report}" |
             tee -a "${{ steps.globals.outputs.summaryFile }}"
         fi
