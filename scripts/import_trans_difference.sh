@@ -85,7 +85,7 @@ rootDir="${1:-}"
 
 #commit1="${3:-"$(git rev-parse HEAD)"}"
 
-commit2="${commit2:-"$(git merge-base "${mainBranch}" ${commit1})"}"
+commit2="${commit2:-"$(git merge-base "origin/${mainBranch}" ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
@@ -122,7 +122,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
   printf "|Files|Import difference|\n|-|-|\n"
   (gawk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
       # we pass the "A"dded files with respect to master, converting them to module names
-      git diff --name-only --diff-filter=A "${mainBranch}" | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
+      git diff --name-only --diff-filter=A "origin/${mainBranch}" | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
     BEGIN{
       # `arrayNewModules` maps integers to module names

@@ -183,7 +183,7 @@ runs:
         tempDir="${{ steps.globals.outputs.tempDir }}"
         touch "${tempDir}/moved_without_deprecation.txt"
         touch "${tempDir}/extraneous_deprecated_module.txt"
-        git checkout ${{ github.base_ref }}
+        git checkout "origin/${{ inputs.MAIN_BRANCH }}"
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
@@ -217,7 +217,7 @@ runs:
         # Compute transitive imports
 
         printf $'Checkout the merge base\n'
-        git checkout "$(git merge-base "${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
+        git checkout "$(git merge-base "origin/${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
         python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee "${{ steps.globals.outputs.tempDir }}/base.json"
@@ -352,7 +352,7 @@ runs:
       shell: bash
       run: |
         # Custom report
-        git checkout "${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
+        git checkout "origin/${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
         echo "Sourcing ${{ inputs.CUSTOM_REPORT_SCRIPT }}"
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]
