@@ -10,7 +10,7 @@ inputs:
     required: false
     default: ${{ github.token }}
   MAIN_BRANCH:
-    description: 'The name of the main branch against which to compare the changes. The default is the base branch of the PR'
+    description: 'The branch against which to check for merge conflicts (typically where the PR will eventually land). Diffs are always computed against the PR base branch (`github.base_ref`). The default is the base branch of the PR.'
     required: false
     default: ${{ github.base_ref }}
   ROOT_DIR:
@@ -130,7 +130,7 @@ runs:
       shell: bash
       run: |
         # Get changed and removed/renamed files
-        git fetch origin ${{ inputs.MAIN_BRANCH }}  # fetch the base branch
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
 
         tallyFile () {
           local number="$(wc -l < "${1}")"
@@ -141,14 +141,14 @@ runs:
         # Get the list of all changed files.
         changed_files=${{ steps.globals.outputs.tempDir }}/changed_files.txt
         echo "Saving the changed files to '${changed_files}'..."
-        git diff --name-only origin/${{ inputs.MAIN_BRANCH }}... > "${changed_files}"
+        git diff --name-only origin/${{ github.base_ref }}... > "${changed_files}"
         tallyFile "${changed_files}"
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
         removed_files=${{ steps.globals.outputs.tempDir }}/removed_files.txt
-        git diff --name-only --diff-filter D origin/${{ inputs.MAIN_BRANCH }}... > "${removed_files}"
+        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... > "${removed_files}"
         tallyFile "${removed_files}"
         echo "Checking for renamed files..."
 
@@ -156,7 +156,7 @@ runs:
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
-        git diff -p --summary --diff-filter=R origin/${{ inputs.MAIN_BRANCH }}... |
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
           awk '
             /^rename from / {
                 file=$0
@@ -183,7 +183,7 @@ runs:
         tempDir="${{ steps.globals.outputs.tempDir }}"
         touch "${tempDir}/moved_without_deprecation.txt"
         touch "${tempDir}/extraneous_deprecated_module.txt"
-        git checkout "origin/${{ inputs.MAIN_BRANCH }}"
+        git checkout "origin/${{ github.base_ref }}"
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
@@ -217,7 +217,7 @@ runs:
         # Compute transitive imports
 
         printf $'Checkout the merge base\n'
-        git checkout "$(git merge-base "origin/${{ inputs.MAIN_BRANCH }}" ${{ github.event.pull_request.head.sha }})"
+        git checkout "$(git merge-base "origin/${{ github.base_ref }}" ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
         python "${{ github.action_path }}/scripts/count-trans-deps.py" "${{ steps.globals.outputs.rootDir }}/" | tee "${{ steps.globals.outputs.tempDir }}/base.json"
@@ -263,7 +263,7 @@ runs:
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ inputs.MAIN_BRANCH }}" "${{ steps.globals.outputs.rootDir }}"
+          "${{ github.action_path }}/scripts/import_trans_difference.sh" -b "${{ github.base_ref }}" "${{ steps.globals.outputs.rootDir }}"
         )
 
         echo "Produce high percentage imports"
@@ -302,7 +302,7 @@ runs:
 
         git checkout "${{ github.head_ref }}" --
         echo "Compute Declarations' diff comment"
-        declDiff=$("${{ github.action_path }}/scripts/declarations_diff.sh" "${{ inputs.MAIN_BRANCH }}")
+        declDiff=$("${{ github.action_path }}/scripts/declarations_diff.sh" "${{ github.base_ref }}")
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>' "#### Declarations diff" "${declDiff}")"
@@ -357,7 +357,7 @@ runs:
       shell: bash
       run: |
         # Custom report
-        git checkout "origin/${{ inputs.MAIN_BRANCH }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
+        git checkout "origin/${{ github.base_ref }}" -- "${{ inputs.CUSTOM_REPORT_SCRIPT }}"
         echo "Sourcing ${{ inputs.CUSTOM_REPORT_SCRIPT }}"
         report="$("${{ inputs.CUSTOM_REPORT_SCRIPT }}" ${{ inputs.CUSTOM_REPORT_SCRIPT_ARGUMENTS }})"
         if [ -n "${report}" ]

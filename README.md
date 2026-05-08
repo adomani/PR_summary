@@ -18,7 +18,7 @@ Create a workflow in your repository (e.g., `.github/workflows/pr_summary.yml`):
 - uses: adomani/PR_summary/@dev
   with:
     GITHUB_TOKEN: # optional, defaults to `github.token`
-    MAIN_BRANCH: # optional, defaults to the base branch of the PR
+    MAIN_BRANCH: # optional, the branch used for the merge-conflict check (diffs always use the PR base branch); defaults to the base branch of the PR
     ROOT_DIR: # optional, defaults to the dir that is the repo name, with first letter capitalized
     IMPORT_DIFF: # optional, whether or not the import diff should be reported, defaults to true
     DECLARATION_DIFF: # optional, whether or not the declarations diff should be reported, defaults to true
